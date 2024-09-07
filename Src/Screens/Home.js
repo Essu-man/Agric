@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { getDownloadURL, ref } from 'firebase/storage'; 
-import { storage } from '../Firebase/FirebaseConfig'; 
+import { getDocs, collection } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../Firebase/FirebaseConfig'; // Ensure correct import paths
 
 const equipmentCategories = [
   { id: '1', name: 'Tractors' },
@@ -12,60 +13,37 @@ const equipmentCategories = [
   { id: '5', name: 'Sprayers' },
 ];
 
-const equipmentData = [
-  {
-    id: '1',
-    name: 'Plow',
-    location: 'Accra, Ghana',
-    price: '₵110/Day',
-    trips: '30 Rentals',
-    rating: '4.6',
-    imagePath: 'https://firebasestorage.googleapis.com/v0/b/my-agrirent.appspot.com/o/cat.plow.png?alt=media&token=b2484ed2-2769-435d-8226-b93eb0a812e9', 
-    category: 'Plows',
-  },
-  {
-    id: '2',
-    name: 'Harvester',
-    location: 'Accra, Ghana',
-    price: '₵150/Day',
-    trips: '30 Rentals',
-    rating: '4.9',
-    imagePath: 'https://firebasestorage.googleapis.com/v0/b/my-agrirent.appspot.com/o/cat.harvester.jpg?alt=media&token=7fc424d5-792d-4c55-8750-c22ad60cb2e6',
-    category: 'Harvesters',
-  },
-  {
-    id: '3',
-    name: 'Large Square Baler',
-    location: 'Accra, Ghana',
-    price: '₵150/Day',
-    trips: '30 Rentals',
-    rating: '4.9',
-    imagePath: 'https://firebasestorage.googleapis.com/v0/b/my-agrirent.appspot.com/o/L331%20Large%20Square%20Baler.png?alt=media&token=63d780bf-e0da-42f8-b2be-84ef4483a0c7',
-    },
-
-];
-
 const Home = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [filteredEquipment, setFilteredEquipment] = useState(equipmentData);
+  const [filteredEquipment, setFilteredEquipment] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchImages = async () => {
-      const updatedEquipmentData = await Promise.all(
-        equipmentData.map(async (item) => {
-          const imageUrl = await getDownloadURL(ref(storage, item.imagePath));
-          return { ...item, imageUrl };
-        })
-      );
-      setFilteredEquipment(updatedEquipmentData);
+    const fetchEquipmentData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'equipment'));
+        const equipmentList = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const imageUrl = await getDownloadURL(ref(storage, data.imagePath));
+            return { id: doc.id, ...data, imageUrl };
+          })
+        );
+        setFilteredEquipment(equipmentList);
+      } catch (e) {
+        setError('Error fetching equipment data');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchImages();
+    fetchEquipmentData();
   }, []);
 
   useEffect(() => {
-    const filteredData = equipmentData.filter((item) => {
+    const filteredData = filteredEquipment.filter((item) => {
       const matchesCategory = selectedCategory ? item.category === selectedCategory : true;
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
@@ -138,6 +116,22 @@ const Home = ({ navigation }) => {
       </View>
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -286,13 +280,13 @@ const styles = StyleSheet.create({
   },
   equipmentLocation: {
     fontSize: 14,
-    color: '#888',
+    color: '#555',
     marginLeft: 5,
   },
   equipmentInfo: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   equipmentPrice: {
     fontSize: 16,
@@ -301,25 +295,31 @@ const styles = StyleSheet.create({
   },
   bookButton: {
     backgroundColor: '#3d9d75',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 10,
   },
   bookButtonText: {
     color: '#FFF',
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   fab: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 30,
+    right: 30,
     backgroundColor: '#3d9d75',
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
+    elevation: 8,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
