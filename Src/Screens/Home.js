@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { getDocs, collection } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../Firebase/FirebaseConfig'; // Ensure correct import paths
+import { getDownloadURL, ref } from 'firebase/storage'; 
+import { collection, getDocs } from 'firebase/firestore';
+import { storage, db } from '../Firebase/FirebaseConfig'; 
 
 const equipmentCategories = [
   { id: '1', name: 'Tractors' },
@@ -15,11 +15,13 @@ const equipmentCategories = [
 
 const Home = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [equipmentData, setEquipmentData] = useState([]);
   const [filteredEquipment, setFilteredEquipment] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch equipment data from Firestore and Storage
   useEffect(() => {
     const fetchEquipmentData = async () => {
       try {
@@ -31,6 +33,7 @@ const Home = ({ navigation }) => {
             return { id: doc.id, ...data, imageUrl };
           })
         );
+        setEquipmentData(equipmentList);
         setFilteredEquipment(equipmentList);
       } catch (e) {
         setError('Error fetching equipment data');
@@ -42,15 +45,16 @@ const Home = ({ navigation }) => {
     fetchEquipmentData();
   }, []);
 
+  // Filter equipment based on selected category and search query
   useEffect(() => {
-    const filteredData = filteredEquipment.filter((item) => {
+    const filteredData = equipmentData.filter((item) => {
       const matchesCategory = selectedCategory ? item.category === selectedCategory : true;
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
 
     setFilteredEquipment(filteredData);
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, equipmentData]);
 
   const handleCategorySelect = (categoryName) => {
     setSelectedCategory(categoryName === selectedCategory ? null : categoryName);
@@ -118,19 +122,11 @@ const Home = ({ navigation }) => {
   );
 
   if (loading) {
-    return (
-      <View style={styles.centered}>
-        <Text>Loading...</Text>
-      </View>
-    );
+    return <Text>Loading...</Text>;
   }
 
   if (error) {
-    return (
-      <View style={styles.centered}>
-        <Text>{error}</Text>
-      </View>
-    );
+    return <Text>{error}</Text>;
   }
 
   return (
@@ -268,10 +264,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ratingText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
     marginLeft: 5,
+    fontSize: 16,
+    color: '#333',
   },
   equipmentLocationContainer: {
     flexDirection: 'row',
@@ -279,9 +274,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   equipmentLocation: {
-    fontSize: 14,
-    color: '#555',
     marginLeft: 5,
+    fontSize: 14,
+    color: '#888',
   },
   equipmentInfo: {
     flexDirection: 'row',
@@ -291,35 +286,29 @@ const styles = StyleSheet.create({
   equipmentPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#3d9d75',
+    color: '#333',
   },
   bookButton: {
     backgroundColor: '#3d9d75',
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
   },
   bookButtonText: {
     color: '#FFF',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   fab: {
     position: 'absolute',
     bottom: 30,
-    right: 30,
+    right: 15,
     backgroundColor: '#3d9d75',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
+    borderRadius: 50,
+    padding: 15,
     alignItems: 'center',
-    elevation: 8,
-  },
-  centered: {
-    flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    elevation: 5,
   },
 });
 
