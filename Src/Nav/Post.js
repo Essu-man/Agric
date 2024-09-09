@@ -1,18 +1,17 @@
-// Orders.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
 
-const Orders = () => {
+const Post = () => {
   const [equipmentName, setEquipmentName] = useState('');
   const [equipmentDescription, setEquipmentDescription] = useState('');
   const [equipmentPrice, setEquipmentPrice] = useState('');
 
   const handleSubmit = () => {
-    // Handle form submission logic here
+   
     console.log('Equipment Name:', equipmentName);
     console.log('Equipment Description:', equipmentDescription);
     console.log('Equipment Price:', equipmentPrice);
-    // Reset form fields
+  
     setEquipmentName('');
     setEquipmentDescription('');
     setEquipmentPrice('');
@@ -64,4 +63,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Orders;
+export default Post;

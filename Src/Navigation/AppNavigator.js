@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import EquipmentDetails from '../Screens/EquipmentDetails';
 import Home from '../Screens/Home';
-import Orders from '../Nav/Orders'; // Orders screen now includes the form
+import Post from '../Nav/Post'; 
 import Settings from '../Nav/Settings';
 import OrderDetails from '../Screens/OrderDetails';
 
@@ -22,7 +22,7 @@ const TabNavigator = () => {
             case 'Home':
               iconName = focused ? 'home' : 'home-outline';
               break;
-            case 'Orders':
+            case 'Post':
               iconName = focused ? 'add-circle' : 'add-circle-outline'; 
               break;
             case 'Settings':
@@ -38,13 +38,15 @@ const TabNavigator = () => {
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
           paddingBottom: 5,
-          height: 60,
+          height: 80,
+          borderTopLeftRadius: 50,
+          borderTopRightRadius: 50,
         },
         headerShown: false,
       })}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Orders" component={Orders} />
+      <Tab.Screen name="Post" component={Post} />
       <Tab.Screen name="Settings" component={Settings} />
     </Tab.Navigator>
   );
