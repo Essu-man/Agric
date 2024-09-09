@@ -4,9 +4,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import EquipmentDetails from '../Screens/EquipmentDetails';
 import Home from '../Screens/Home';
-import Orders from '../Nav/Orders';
+import Orders from '../Nav/Orders'; // Orders screen now includes the form
 import Settings from '../Nav/Settings';
 import OrderDetails from '../Screens/OrderDetails';
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -22,7 +23,7 @@ const TabNavigator = () => {
               iconName = focused ? 'home' : 'home-outline';
               break;
             case 'Orders':
-              iconName = focused ? 'list' : 'list-outline';
+              iconName = focused ? 'add-circle' : 'add-circle-outline'; 
               break;
             case 'Settings':
               iconName = focused ? 'settings' : 'settings-outline';
@@ -64,8 +65,7 @@ const AppNavigator = () => {
     >
       <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="EquipmentDetails" component={EquipmentDetails} options={{ headerShown: false }} />
-      <Stack.Screen name="OrderDetails" component={OrderDetails} options={{ headerShown: false}} />
-
+      <Stack.Screen name="OrderDetails" component={OrderDetails} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
