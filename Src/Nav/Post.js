@@ -14,14 +14,14 @@ const Post = () => {
   const [imageUri, setImageUri] = useState(null);
 
   const handleImagePick = async () => {
-    // Request permission to access the gallery
+    
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       alert('Sorry, we need camera roll permissions to make this work!');
       return;
     }
 
-    // Launch image picker
+ 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -30,7 +30,7 @@ const Post = () => {
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImageUri(result.assets[0].uri); // Ensure the URI is valid
+      setImageUri(result.assets[0].uri); 
     }
   };
 
@@ -40,7 +40,7 @@ const Post = () => {
       return;
     }
 
-    // Handle form submission logic here
+    
     console.log('Equipment Name:', equipmentName);
     console.log('Equipment Description:', equipmentDescription);
     console.log('Equipment Price:', equipmentPrice);
@@ -48,9 +48,9 @@ const Post = () => {
     console.log('Hirer Name:', hirerName);
     console.log('Hirer Contact:', hirerContact);
     console.log('Equipment Type:', equipmentType);
-    console.log('Image URI:', imageUri); // Log image URI
+    console.log('Image URI:', imageUri); 
 
-    // Reset form fields
+   
     setEquipmentName('');
     setEquipmentDescription('');
     setEquipmentPrice('');
@@ -154,8 +154,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 2,
     borderColor: '#ccc',
-    elevation: 4, // Android shadow
-    shadowColor: '#000', // iOS shadow
+    elevation: 4, 
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

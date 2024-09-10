@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     padding: 15,
     flex: 1,
     marginHorizontal: 10,
-    flexDirection: 'row', // Align items horizontally
+    flexDirection: 'row', 
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
   icon: {
-    marginRight: 10, // Space between icon and text
+    marginRight: 10, 
   },
   infoTextContainer: {
     flex: 1,

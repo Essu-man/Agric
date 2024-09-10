@@ -21,7 +21,6 @@ const Home = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch equipment data from Firestore and Storage
   useEffect(() => {
     const fetchEquipmentData = async () => {
       try {
@@ -45,7 +44,7 @@ const Home = ({ navigation }) => {
     fetchEquipmentData();
   }, []);
 
-  // Filter equipment based on selected category and search query
+
   useEffect(() => {
     const filteredData = equipmentData.filter((item) => {
       const matchesCategory = selectedCategory ? item.category === selectedCategory : true;
