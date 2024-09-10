@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { getDownloadURL, ref } from 'firebase/storage'; 
 import { collection, getDocs } from 'firebase/firestore';
-import { storage, db } from '../Firebase/FirebaseConfig'; 
+import { db } from '../Firebase/FirebaseConfig'; // Import Firestore
 
 const equipmentCategories = [
   { id: '1', name: 'Tractors' },
@@ -22,16 +21,15 @@ const Home = ({ navigation }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Fetch data from Firestore
     const fetchEquipmentData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'equipment'));
-        const equipmentList = await Promise.all(
-          querySnapshot.docs.map(async (doc) => {
-            const data = doc.data();
-            const imageUrl = await getDownloadURL(ref(storage, data.imagePath));
-            return { id: doc.id, ...data, imageUrl };
-          })
-        );
+        const equipmentList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
         setEquipmentData(equipmentList);
         setFilteredEquipment(equipmentList);
       } catch (e) {
@@ -43,7 +41,6 @@ const Home = ({ navigation }) => {
 
     fetchEquipmentData();
   }, []);
-
 
   useEffect(() => {
     const filteredData = equipmentData.filter((item) => {
@@ -130,6 +127,7 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* Header and Search Bar */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Find Your Equipment</Text>
         <TouchableOpacity>
@@ -148,6 +146,8 @@ const Home = ({ navigation }) => {
           <Ionicons name="options-outline" size={20} color="#FFF" />
         </TouchableOpacity>
       </View>
+
+      {/* Categories */}
       <View style={styles.categoryContainer}>
         <FlatList
           data={equipmentCategories}
@@ -157,18 +157,21 @@ const Home = ({ navigation }) => {
           showsHorizontalScrollIndicator={false}
         />
       </View>
+
+      {/* Equipment List */}
       <FlatList
         data={filteredEquipment}
         renderItem={renderEquipmentItem}
         keyExtractor={(item) => item.id}
       />
+      
+      {/* Floating Action Button */}
       <TouchableOpacity style={styles.fab}>
         <Ionicons name="help-circle-outline" size={28} color="#FFF" />
       </TouchableOpacity>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

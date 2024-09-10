@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
+import { db, storage } from '../Firebase/FirebaseConfig'; 
+import { collection, addDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const Post = () => {
+const Post = ({ navigation }) => {
   const [equipmentName, setEquipmentName] = useState('');
   const [equipmentDescription, setEquipmentDescription] = useState('');
   const [equipmentPrice, setEquipmentPrice] = useState('');
@@ -14,14 +17,12 @@ const Post = () => {
   const [imageUri, setImageUri] = useState(null);
 
   const handleImagePick = async () => {
-    
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       alert('Sorry, we need camera roll permissions to make this work!');
       return;
     }
 
- 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -30,35 +31,53 @@ const Post = () => {
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImageUri(result.assets[0].uri); 
+      setImageUri(result.assets[0].uri);
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!equipmentName || !equipmentDescription || !equipmentPrice || !equipmentLocation || !hirerName || !hirerContact || !equipmentType) {
       alert('Please fill out all fields');
       return;
     }
 
-    
-    console.log('Equipment Name:', equipmentName);
-    console.log('Equipment Description:', equipmentDescription);
-    console.log('Equipment Price:', equipmentPrice);
-    console.log('Equipment Location:', equipmentLocation);
-    console.log('Hirer Name:', hirerName);
-    console.log('Hirer Contact:', hirerContact);
-    console.log('Equipment Type:', equipmentType);
-    console.log('Image URI:', imageUri); 
+    try {
+      // Upload image to Firebase Storage
+      const imageName = imageUri.substring(imageUri.lastIndexOf('/') + 1);
+      const storageRef = ref(storage, `equipment/${imageName}`);
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      await uploadBytes(storageRef, blob);
+      const imageUrl = await getDownloadURL(storageRef);
 
-   
-    setEquipmentName('');
-    setEquipmentDescription('');
-    setEquipmentPrice('');
-    setEquipmentLocation('');
-    setHirerName('');
-    setHirerContact('');
-    setEquipmentType('');
-    setImageUri(null);
+      // Store equipment data in Firestore
+      await addDoc(collection(db, 'equipment'), {
+        name: equipmentName,
+        description: equipmentDescription,
+        price: equipmentPrice,
+        location: equipmentLocation,
+        hirer: hirerName,
+        contact: hirerContact,
+        type: equipmentType,
+        imageUrl: imageUrl,
+      });
+
+      alert('Equipment added successfully!');
+      navigation.navigate('Home'); // Navigate back to Home screen after posting
+
+      // Reset form
+      setEquipmentName('');
+      setEquipmentDescription('');
+      setEquipmentPrice('');
+      setEquipmentLocation('');
+      setHirerName('');
+      setHirerContact('');
+      setEquipmentType('');
+      setImageUri(null);
+    } catch (error) {
+      console.error('Error adding equipment:', error);
+      alert('Error adding equipment.');
+    }
   };
 
   return (
@@ -130,7 +149,6 @@ const Post = () => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
