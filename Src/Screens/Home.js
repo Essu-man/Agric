@@ -2,14 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../Firebase/FirebaseConfig'; // Import Firestore
+import { db } from '../Firebase/FirebaseConfig'; 
 
 const equipmentCategories = [
-  { id: '1', name: 'Tractors' },
-  { id: '2', name: 'Harvesters' },
-  { id: '3', name: 'Balers' },
-  { id: '4', name: 'Plows' },
-  { id: '5', name: 'Sprayers' },
+  { id: '1', name: 'Tractor' },
+  { id: '2', name: 'Harvester' },
+  { id: '3', name: 'Baler' },
+  { id: '4', name: 'Plow' },
+  { id: '5', name: 'Sprayer' },
 ];
 
 const Home = ({ navigation }) => {
@@ -21,7 +21,7 @@ const Home = ({ navigation }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch data from Firestore
+  
     const fetchEquipmentData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'equipment'));
@@ -127,7 +127,7 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header and Search Bar */}
+     
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Find Your Equipment</Text>
         <TouchableOpacity>
@@ -158,14 +158,14 @@ const Home = ({ navigation }) => {
         />
       </View>
 
-      {/* Equipment List */}
+      
       <FlatList
         data={filteredEquipment}
         renderItem={renderEquipmentItem}
         keyExtractor={(item) => item.id}
       />
       
-      {/* Floating Action Button */}
+     
       <TouchableOpacity style={styles.fab}>
         <Ionicons name="help-circle-outline" size={28} color="#FFF" />
       </TouchableOpacity>
