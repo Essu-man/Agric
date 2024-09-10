@@ -21,7 +21,6 @@ const Home = ({ navigation }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-  
     const fetchEquipmentData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'equipment'));
@@ -95,6 +94,7 @@ const Home = ({ navigation }) => {
       <View style={styles.equipmentDetails}>
         <View style={styles.equipmentHeader}>
           <Text style={styles.equipmentName}>{item.name}</Text>
+          <Text style={styles.equipmentType}>{item.type}</Text>
           <View style={styles.equipmentRating}>
             <Ionicons name="star" size={16} color="gold" />
             <Text style={styles.ratingText}>{item.rating}</Text>
@@ -105,7 +105,7 @@ const Home = ({ navigation }) => {
           <Text style={styles.equipmentLocation}>{item.location}</Text>
         </View>
         <View style={styles.equipmentInfo}>
-          <Text style={styles.equipmentPrice}>{item.price}</Text>
+          <Text style={styles.equipmentPrice}>GHS {item.price}</Text>
           <TouchableOpacity
             style={styles.bookButton}
             onPress={() => handleEquipmentPress(item)}
@@ -127,7 +127,6 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-     
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Find Your Equipment</Text>
         <TouchableOpacity>
@@ -158,20 +157,19 @@ const Home = ({ navigation }) => {
         />
       </View>
 
-      
       <FlatList
         data={filteredEquipment}
         renderItem={renderEquipmentItem}
         keyExtractor={(item) => item.id}
       />
-      
-     
+
       <TouchableOpacity style={styles.fab}>
         <Ionicons name="help-circle-outline" size={28} color="#FFF" />
       </TouchableOpacity>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -260,6 +258,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
+  },
+  equipmentType: {
+    fontSize: 14,
+    color: '#555',
   },
   equipmentRating: {
     flexDirection: 'row',
