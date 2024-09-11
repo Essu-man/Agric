@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // for icons, adjust based on your preference
+import { Ionicons } from '@expo/vector-icons'; 
 
 const SettingsScreen = ({ navigation }) => {
   const handleLogout = () => {
-
+     
     Alert.alert("Logged out", "You have been logged out.");
   };
 
