@@ -1,19 +1,25 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 
 const SettingsScreen = ({ navigation }) => {
   const handleLogout = () => {
-     
+    // Add your logout functionality here
     Alert.alert("Logged out", "You have been logged out.");
+    // Example: navigation.navigate('Login'); // After logging out, navigate to the login screen
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert("Delete Account", "Are you sure you want to delete your account?");
+    // Add your delete account logic here
+    Alert.alert("Delete Account", "Are you sure you want to delete your account?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", onPress: () => console.log("Account deleted") }, // Handle account deletion
+    ]);
   };
 
   return (
     <ScrollView style={styles.container}>
+      {/* Account Settings */}
       <Text style={styles.sectionTitle}>Account Settings</Text>
       <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('EditProfile')}>
         <Text style={styles.optionText}>Edit Profile Information</Text>
@@ -28,11 +34,8 @@ const SettingsScreen = ({ navigation }) => {
         <Ionicons name="trash" size={20} color="red" />
       </TouchableOpacity>
 
+      {/* Help and Support */}
       <Text style={styles.sectionTitle}>Help and Support</Text>
-      <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('FAQ')}>
-        <Text style={styles.optionText}>FAQ</Text>
-        <Ionicons name="help-circle-outline" size={20} color="gray" />
-      </TouchableOpacity>
       <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('ContactSupport')}>
         <Text style={styles.optionText}>Contact Customer Support</Text>
         <Ionicons name="call-outline" size={20} color="gray" />
@@ -42,6 +45,7 @@ const SettingsScreen = ({ navigation }) => {
         <Ionicons name="information-circle-outline" size={20} color="gray" />
       </TouchableOpacity>
 
+      {/* Privacy and Terms */}
       <Text style={styles.sectionTitle}>Privacy and Terms</Text>
       <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PrivacyPolicy')}>
         <Text style={styles.optionText}>Privacy Policy</Text>
@@ -51,11 +55,8 @@ const SettingsScreen = ({ navigation }) => {
         <Text style={styles.optionText}>Terms of Service</Text>
         <Ionicons name="document-outline" size={20} color="gray" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('CookiePolicy')}>
-        <Text style={styles.optionText}>Cookie Policy</Text>
-        <Ionicons name="cookie-outline" size={20} color="gray" />
-      </TouchableOpacity>
 
+      {/* Logout */}
       <Text style={styles.sectionTitle}>Logout</Text>
       <TouchableOpacity style={styles.option} onPress={handleLogout}>
         <Text style={styles.optionText}>Log out of the App</Text>
@@ -77,6 +78,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 15,
     color: '#333',
+    
   },
   option: {
     flexDirection: 'row',
