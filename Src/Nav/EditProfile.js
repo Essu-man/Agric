@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { getAuth, updateProfile, updateEmail } from 'firebase/auth';
 
 const EditProfile = () => {
@@ -20,7 +22,6 @@ const EditProfile = () => {
     if (user) {
       setDisplayName(user.displayName || '');
       setEmail(user.email || '');
-      // Set additional user data if available
     }
   }, [user]);
 
@@ -46,9 +47,43 @@ const EditProfile = () => {
     }
   };
 
-  const handleProfilePictureChange = () => {
-    // Add functionality to update profile picture
-    Alert.alert('Change Profile Picture', 'This feature is under development.');
+  const handleProfilePictureChange = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'You need to grant camera roll permissions.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const { uri } = result.assets[0];
+      // Optionally, you can resize or crop the image here
+      setPhotoURL(uri);
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'You need to grant camera permissions.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const { uri } = result.assets[0];
+      // Optionally, you can resize or crop the image here
+      setPhotoURL(uri);
+    }
   };
 
   return (
@@ -57,13 +92,18 @@ const EditProfile = () => {
       style={styles.container}
     >
       <View style={styles.profileCard}>
-        <TouchableOpacity onPress={handleProfilePictureChange} style={styles.profilePictureContainer}>
-          <Image
-            source={{ uri: photoURL || 'https://via.placeholder.com/150' }}
-            style={styles.profilePicture}
-          />
-          <Ionicons name="camera-outline" size={24} color="white" style={styles.editIcon} />
-        </TouchableOpacity>
+        <View style={styles.profilePictureContainer}>
+          <TouchableOpacity onPress={handleProfilePictureChange} style={styles.profilePictureWrapper}>
+            <Image
+              source={{ uri: photoURL || 'https://via.placeholder.com/150' }}
+              style={styles.profilePicture}
+            />
+            <Ionicons name="camera-outline" size={24} color="white" style={styles.editIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleTakePhoto} style={styles.takePhotoButton}>
+            <Text style={styles.takePhotoButtonText}>Take Photo</Text>
+          </TouchableOpacity>
+        </View>
 
         <Text style={styles.label}>Display Name</Text>
         <TextInput
@@ -143,6 +183,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+  profilePictureWrapper: {
+    position: 'relative',
+  },
   profilePicture: {
     width: 120,
     height: 120,
@@ -155,6 +198,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#6a11cb',
     borderRadius: 15,
     padding: 5,
+  },
+  takePhotoButton: {
+    marginTop: 10,
+    backgroundColor: '#6a11cb',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  takePhotoButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   label: {
     fontSize: 18,
