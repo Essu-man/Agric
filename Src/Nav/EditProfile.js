@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { getAuth, updateProfile, updateEmail } from 'firebase/auth';
 
-const EditProfileScreen = () => {
+const EditProfile = () => {
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -65,4 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditProfileScreen;
+export default EditProfile;
