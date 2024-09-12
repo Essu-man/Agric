@@ -7,6 +7,7 @@ import Home from '../Screens/Home';
 import Post from '../Nav/Post'; 
 import Settings from '../Nav/Settings';
 import OrderDetails from '../Screens/OrderDetails';
+import EditProfileScreen from '../Nav/EditProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -68,6 +69,8 @@ const AppNavigator = () => {
       <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="EquipmentDetails" component={EquipmentDetails} options={{ headerShown: false }} />
       <Stack.Screen name="OrderDetails" component={OrderDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} options={{ headerShown: false }} />
+
     </Stack.Navigator>
   );
 };

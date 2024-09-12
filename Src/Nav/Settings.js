@@ -4,16 +4,18 @@ import { Ionicons } from '@expo/vector-icons';
 
 const SettingsScreen = ({ navigation }) => {
   const handleLogout = () => {
-    // Add your logout functionality here
     Alert.alert("Logged out", "You have been logged out.");
-    // Example: navigation.navigate('Login'); // After logging out, navigate to the login screen
+    navigation.navigate('Splash')
   };
 
+  const handleEditProfileinformation = () => {
+    Alert.alert("Edit ", "Changes made Successfully");
+    navigation.navigate('EditProfileScreen')
+  };
   const handleDeleteAccount = () => {
-    // Add your delete account logic here
     Alert.alert("Delete Account", "Are you sure you want to delete your account?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Delete", onPress: () => console.log("Account deleted") }, // Handle account deletion
+      { text: "Delete", onPress: () => console.log("Account deleted") }, 
     ]);
   };
 
@@ -72,13 +74,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingVertical: 10,
+    paddingTop: 40,  // This adds space at the top
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 15,
     color: '#333',
-    
   },
   option: {
     flexDirection: 'row',
