@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../Firebase/FirebaseConfig'; 
+import { db } from '../Firebase/FirebaseConfig';
 
 const equipmentCategories = [
   { id: '1', name: 'Tractor' },
@@ -95,11 +95,8 @@ const Home = ({ navigation }) => {
         <View style={styles.equipmentHeader}>
           <Text style={styles.equipmentName}>{item.name}</Text>
           <Text style={styles.equipmentType}>{item.type}</Text>
-          <View style={styles.equipmentRating}>
-            <Ionicons name="star" size={16} color="gold" />
-            <Text style={styles.ratingText}>{item.rating}</Text>
-          </View>
         </View>
+        <Text style={styles.equipmentDescription}>{item.description}</Text>
         <View style={styles.equipmentLocationContainer}>
           <Ionicons name="location-outline" size={16} color="#888" />
           <Text style={styles.equipmentLocation}>{item.location}</Text>
@@ -146,7 +143,6 @@ const Home = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Categories */}
       <View style={styles.categoryContainer}>
         <FlatList
           data={equipmentCategories}
@@ -263,14 +259,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
   },
-  equipmentRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ratingText: {
-    marginLeft: 5,
-    fontSize: 16,
-    color: '#333',
+  equipmentDescription: {
+    fontSize: 14,
+    color: '#777',
+    marginBottom: 10,
   },
   equipmentLocationContainer: {
     flexDirection: 'row',
@@ -294,9 +286,9 @@ const styles = StyleSheet.create({
   },
   bookButton: {
     backgroundColor: '#3d9d75',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 10,
   },
   bookButtonText: {
     color: '#FFF',
@@ -305,13 +297,11 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    bottom: 30,
-    right: 15,
+    bottom: 20,
+    right: 20,
     backgroundColor: '#3d9d75',
     borderRadius: 50,
     padding: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
     elevation: 5,
   },
 });

@@ -81,7 +81,6 @@ const EditProfile = () => {
 
     if (!result.canceled) {
       const { uri } = result.assets[0];
-      // Optionally, you can resize or crop the image here
       setPhotoURL(uri);
     }
   };
