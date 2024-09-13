@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState, useEffect } from 'react';
-import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, RefreshControl } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../Firebase/FirebaseConfig';
+import { db } from '../Firebase/FirebaseConfig'; 
 
 const equipmentCategories = [
   { id: '1', name: 'Tractor' },
@@ -19,35 +19,36 @@ const Home = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchEquipmentData = async () => {
+    setLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, 'equipment'));
+      const equipmentList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setEquipmentData(equipmentList);
+      setFilteredEquipment(equipmentList);
+    } catch (e) {
+      setError('Error fetching equipment data');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchEquipmentData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'equipment'));
-        const equipmentList = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        setEquipmentData(equipmentList);
-        setFilteredEquipment(equipmentList);
-      } catch (e) {
-        setError('Error fetching equipment data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEquipmentData();
   }, []);
 
   useEffect(() => {
     const filteredData = equipmentData.filter((item) => {
-      const matchesCategory = selectedCategory ? item.category === selectedCategory : true;
+      const matchesCategory = selectedCategory ? item.type === selectedCategory : true;
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-
     setFilteredEquipment(filteredData);
   }, [selectedCategory, searchQuery, equipmentData]);
 
@@ -58,6 +59,11 @@ const Home = ({ navigation }) => {
   const handleEquipmentPress = (item) => {
     navigation.navigate('EquipmentDetails', { equipment: item });
   };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchEquipmentData();
+  }, []);
 
   const renderCategoryItem = ({ item }) => (
     <TouchableOpacity
@@ -92,17 +98,14 @@ const Home = ({ navigation }) => {
         )}
       </TouchableOpacity>
       <View style={styles.equipmentDetails}>
-        <View style={styles.equipmentHeader}>
-          <Text style={styles.equipmentName}>{item.name}</Text>
-          <Text style={styles.equipmentType}>{item.type}</Text>
-        </View>
-        <Text style={styles.equipmentDescription}>{item.description}</Text>
+        <Text style={styles.equipmentName}>{item.name}</Text>
+        <Text style={styles.equipmentType}>{item.type}</Text>
         <View style={styles.equipmentLocationContainer}>
           <Ionicons name="location-outline" size={16} color="#888" />
           <Text style={styles.equipmentLocation}>{item.location}</Text>
         </View>
         <View style={styles.equipmentInfo}>
-          <Text style={styles.equipmentPrice}>GHS {item.price}</Text>
+          <Text style={styles.equipmentPrice}>GHS {item.price} / day</Text>
           <TouchableOpacity
             style={styles.bookButton}
             onPress={() => handleEquipmentPress(item)}
@@ -143,6 +146,7 @@ const Home = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Categories */}
       <View style={styles.categoryContainer}>
         <FlatList
           data={equipmentCategories}
@@ -157,6 +161,7 @@ const Home = ({ navigation }) => {
         data={filteredEquipment}
         renderItem={renderEquipmentItem}
         keyExtractor={(item) => item.id}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
 
       <TouchableOpacity style={styles.fab}>
@@ -230,7 +235,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   equipmentImage: {
-    width: '95%',
+    width: '100%',
     height: 180,
     borderRadius: 10,
     marginBottom: 15,
@@ -244,24 +249,15 @@ const styles = StyleSheet.create({
   equipmentDetails: {
     flexDirection: 'column',
   },
-  equipmentHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
   equipmentName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
+    marginBottom: 5,
   },
   equipmentType: {
     fontSize: 14,
     color: '#555',
-  },
-  equipmentDescription: {
-    fontSize: 14,
-    color: '#777',
     marginBottom: 10,
   },
   equipmentLocationContainer: {
@@ -280,28 +276,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   equipmentPrice: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#FFF',
+    backgroundColor: '#3d9d75',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 20,
   },
   bookButton: {
     backgroundColor: '#3d9d75',
-    paddingVertical: 8,
-    paddingHorizontal: 20,
     borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
   },
   bookButtonText: {
     color: '#FFF',
-    fontSize: 14,
     fontWeight: 'bold',
   },
   fab: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 30,
+    right: 15,
     backgroundColor: '#3d9d75',
     borderRadius: 50,
     padding: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
     elevation: 5,
   },
 });
