@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from 'firebase/auth';
 
@@ -17,10 +17,6 @@ const SettingsScreen = ({ navigation }) => {
     navigation.navigate('Splash');
   };
 
-  const handleEditProfileInformation = () => {
-    navigation.navigate('EditProfile');
-  };
-
   const handleDeleteAccount = () => {
     Alert.alert("Delete Account", "Are you sure you want to delete your account?", [
       { text: "Cancel", style: "cancel" },
@@ -30,24 +26,8 @@ const SettingsScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Profile Information */}
-      <View style={styles.profileSection}>
-        <View style={styles.profilePictureContainer}>
-          <Image
-            source={{ uri: user?.photoURL || 'https://via.placeholder.com/150' }}
-            style={styles.profilePicture}
-          />
-        </View>
-        <Text style={styles.profileName}>{user?.displayName || 'User Name'}</Text>
-        <Text style={styles.profileEmail}>{user?.email || 'user@example.com'}</Text>
-      </View>
-
       {/* Account Settings */}
       <Text style={styles.sectionTitle}>Account Settings</Text>
-      <TouchableOpacity style={styles.option} onPress={handleEditProfileInformation}>
-        <Text style={styles.optionText}>Edit Profile Information</Text>
-        <Ionicons name="chevron-forward" size={20} color="gray" />
-      </TouchableOpacity>
       <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('ChangePassword')}>
         <Text style={styles.optionText}>Change Password</Text>
         <Ionicons name="chevron-forward" size={20} color="gray" />
@@ -62,10 +42,6 @@ const SettingsScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('ContactSupport')}>
         <Text style={styles.optionText}>Contact Customer Support</Text>
         <Ionicons name="call-outline" size={20} color="gray" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.option} onPress={() => Alert.alert('App Version', 'Version 1.0.0')}>
-        <Text style={styles.optionText}>App Version Information</Text>
-        <Ionicons name="information-circle-outline" size={20} color="gray" />
       </TouchableOpacity>
 
       {/* Privacy and Terms */}
@@ -96,32 +72,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     paddingTop: 40,  // This adds space at the top
-  },
-  profileSection: {
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  profilePictureContainer: {
-    marginBottom: 10,
-  },
-  profilePicture: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  profileName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  profileEmail: {
-    fontSize: 16,
-    color: '#555',
   },
   sectionTitle: {
     fontSize: 18,

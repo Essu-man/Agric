@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect, useCallback } from 'react';
-import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, RefreshControl } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, RefreshControl } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../Firebase/FirebaseConfig';
-import SkeletonPlaceholder from "react-native-skeleton-placeholder"; 
+import { db } from '../Firebase/FirebaseConfig'; 
 
 const equipmentCategories = [
   { id: '1', name: 'Tractor' },
@@ -21,9 +20,6 @@ const Home = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [expandedItemId, setExpandedItemId] = useState(null); 
-  const [modalVisible, setModalVisible] = useState(false); 
-
 
   const fetchEquipmentData = async () => {
     setLoading(true);
@@ -47,7 +43,6 @@ const Home = ({ navigation }) => {
     fetchEquipmentData();
   }, []);
 
-  // Filter based on category and search
   useEffect(() => {
     const filteredData = equipmentData.filter((item) => {
       const matchesCategory = selectedCategory ? item.type === selectedCategory : true;
@@ -62,7 +57,7 @@ const Home = ({ navigation }) => {
   };
 
   const handleEquipmentPress = (item) => {
-    setExpandedItemId(expandedItemId === item.id ? null : item.id); // Toggle expansion
+    navigation.navigate('EquipmentDetails', { equipment: item });
   };
 
   const onRefresh = useCallback(() => {
@@ -70,7 +65,6 @@ const Home = ({ navigation }) => {
     fetchEquipmentData();
   }, []);
 
-  // Render Category Item
   const renderCategoryItem = ({ item }) => (
     <TouchableOpacity
       style={[
@@ -94,65 +88,49 @@ const Home = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  // Render Skeleton Loader
-  const renderSkeletonLoader = () => (
-    <SkeletonPlaceholder>
-      <View style={styles.skeletonCard} />
-      <View style={styles.skeletonCard} />
-      <View style={styles.skeletonCard} />
-    </SkeletonPlaceholder>
-  );
-
-  // Render Equipment Item with progressive disclosure (expand on click)
   const renderEquipmentItem = ({ item }) => (
-    <TouchableOpacity style={styles.equipmentCard} onPress={() => handleEquipmentPress(item)}>
-      {item.imageUrl ? (
-        <Image source={{ uri: item.imageUrl }} style={styles.equipmentImage} />
-      ) : (
-        <Text style={styles.imageFallback}>Image not found</Text>
-      )}
+    <View style={styles.equipmentCard}>
+      <TouchableOpacity onPress={() => handleEquipmentPress(item)}>
+        {item.imageUrl ? (
+          <Image source={{ uri: item.imageUrl }} style={styles.equipmentImage} />
+        ) : (
+          <Text style={styles.imageFallback}>Image not found</Text>
+        )}
+      </TouchableOpacity>
       <View style={styles.equipmentDetails}>
         <Text style={styles.equipmentName}>{item.name}</Text>
-        {expandedItemId === item.id && (
-          <>
-            <Text style={styles.equipmentType}>{item.type}</Text>
-            <View style={styles.equipmentLocationContainer}>
-              <Ionicons name="location-outline" size={16} color="#888" />
-              <Text style={styles.equipmentLocation}>{item.location}</Text>
-            </View>
-            <Text style={styles.equipmentPrice}>GHS {item.price} / day</Text>
-          </>
-        )}
+        <Text style={styles.equipmentType}>{item.type}</Text>
+        <View style={styles.equipmentLocationContainer}>
+          <Ionicons name="location-outline" size={16} color="#888" />
+          <Text style={styles.equipmentLocation}>{item.location}</Text>
+        </View>
+        <View style={styles.equipmentInfo}>
+          <Text style={styles.equipmentPrice}>GHS {item.price} / day</Text>
+          <TouchableOpacity
+            style={styles.bookButton}
+            onPress={() => handleEquipmentPress(item)}
+          >
+            <Text style={styles.bookButtonText}>Book Now</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
-  // No results illustration
   const renderNoResults = () => (
     <View style={styles.noResultsContainer}>
-      <Image source={require('../assets/no-results.png')} style={styles.noResultsImage} />
+      <Image
+        source={{
+          uri: 'https://firebasestorage.googleapis.com/v0/b/my-agrirent.appspot.com/o/no%20search%20results.webp?alt=media&token=bc88f8e3-a601-4d97-8873-c47b65d34f74',
+        }}
+        style={styles.noResultsImage}
+      />
       <Text style={styles.noResultsText}>No equipment found</Text>
     </View>
   );
 
-  // Advanced filter modal
-  const renderFilterModal = () => (
-    <Modal visible={modalVisible} transparent animationType="slide">
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Filter Equipment</Text>
-          {/* Add filter components like sliders, checkboxes here */}
-          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalCloseButton}>
-            <Text style={styles.modalCloseButtonText}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-
-  // Conditional rendering based on loading, error, or data
   if (loading) {
-    return renderSkeletonLoader();
+    return <Text>Loading...</Text>;
   }
 
   if (error) {
@@ -163,9 +141,6 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Find Your Equipment</Text>
-        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.filterButton}>
-          <Ionicons name="options-outline" size={20} color="#FFF" />
-        </TouchableOpacity>
       </View>
       <View style={styles.searchBar}>
         <Ionicons name="search" size={20} color="gray" />
@@ -175,19 +150,22 @@ const Home = ({ navigation }) => {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
+        <TouchableOpacity style={styles.filterButton}>
+          <Ionicons name="options-outline" size={20} color="#FFF" />
+        </TouchableOpacity>
       </View>
 
       {/* Categories */}
-      <FlatList
-        data={equipmentCategories}
-        renderItem={renderCategoryItem}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoryContainer}
-      />
+      <View style={styles.categoryContainer}>
+        <FlatList
+          data={equipmentCategories}
+          renderItem={renderCategoryItem}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
 
-      {/* Equipment List or No Results */}
       {filteredEquipment.length > 0 ? (
         <FlatList
           data={filteredEquipment}
@@ -198,9 +176,6 @@ const Home = ({ navigation }) => {
       ) : (
         renderNoResults()
       )}
-
-      {/* Advanced Filter Modal */}
-      {renderFilterModal()}
     </View>
   );
 };
@@ -213,9 +188,6 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 20,
   },
   headerTitle: {
@@ -258,47 +230,72 @@ const styles = StyleSheet.create({
   },
   equipmentCard: {
     backgroundColor: '#FFF',
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 15,
-    marginBottom: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+    position: 'relative',
   },
   equipmentImage: {
-    width: 80,
-    height: 80,
+    width: '100%',
+    height: 180,
     borderRadius: 10,
-    marginRight: 15,
+    marginBottom: 15,
   },
   imageFallback: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#888',
+    textAlign: 'center',
+    marginVertical: 60,
   },
   equipmentDetails: {
-    flex: 1,
+    flexDirection: 'column',
   },
   equipmentName: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
   },
   equipmentType: {
     fontSize: 14,
-    color: '#888',
+    color: '#555',
+    marginBottom: 10,
   },
   equipmentLocationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 5,
+    marginBottom: 10,
   },
   equipmentLocation: {
     marginLeft: 5,
     fontSize: 14,
     color: '#888',
   },
+  equipmentInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   equipmentPrice: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#3d9d75',
+  },
+  bookButton: {
+    backgroundColor: '#3d9d75',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+  },
+  bookButtonText: {
+    fontSize: 14,
+    color: '#FFF',
+    fontWeight: 'bold',
   },
   noResultsContainer: {
     justifyContent: 'center',
@@ -306,45 +303,23 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   noResultsImage: {
-    width: 200,
-    height: 200,
+    width: 250,
+    height: 250,
     marginBottom: 20,
   },
   noResultsText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#888',
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#FFF',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  modalCloseButton: {
-    marginTop: 20,
-    paddingVertical: 10,
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
     backgroundColor: '#3d9d75',
-    borderRadius: 10,
+    padding: 15,
+    borderRadius: 50,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  modalCloseButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-  },
-  skeletonCard: {
-    height: 150,
-    borderRadius: 10,
-    marginBottom: 15,
   },
 });
 
