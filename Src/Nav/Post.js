@@ -42,7 +42,7 @@ const Post = ({ navigation }) => {
     }
 
     try {
-      // Upload image to Firebase Storage
+     
       const imageName = imageUri.substring(imageUri.lastIndexOf('/') + 1);
       const storageRef = ref(storage, `equipment/${imageName}`);
       const response = await fetch(imageUri);
@@ -50,7 +50,6 @@ const Post = ({ navigation }) => {
       await uploadBytes(storageRef, blob);
       const imageUrl = await getDownloadURL(storageRef);
 
-      // Store equipment data in Firestore
       await addDoc(collection(db, 'equipment'), {
         name: equipmentName,
         description: equipmentDescription,
@@ -63,9 +62,9 @@ const Post = ({ navigation }) => {
       });
 
       alert('Equipment added successfully!');
-      navigation.navigate('Home'); // Navigate back to Home screen after posting
+      navigation.navigate('Home');
 
-      // Reset form
+     
       setEquipmentName('');
       setEquipmentDescription('');
       setEquipmentPrice('');
