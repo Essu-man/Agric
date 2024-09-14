@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { db, storage } from '../Firebase/FirebaseConfig'; 
+import { db, storage } from '../Firebase/FirebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -13,6 +13,7 @@ const Post = ({ navigation }) => {
   const [equipmentLocation, setEquipmentLocation] = useState('');
   const [hirerName, setHirerName] = useState('');
   const [hirerContact, setHirerContact] = useState('');
+  const [hirerEmail, setHirerEmail] = useState('');
   const [equipmentType, setEquipmentType] = useState('');
   const [imageUri, setImageUri] = useState(null);
 
@@ -36,13 +37,12 @@ const Post = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
-    if (!equipmentName || !equipmentDescription || !equipmentPrice || !equipmentLocation || !hirerName || !hirerContact || !equipmentType) {
+    if (!equipmentName || !equipmentDescription || !equipmentPrice || !equipmentLocation || !hirerName || !hirerContact || !hirerEmail || !equipmentType) {
       alert('Please fill out all fields');
       return;
     }
 
     try {
-     
       const imageName = imageUri.substring(imageUri.lastIndexOf('/') + 1);
       const storageRef = ref(storage, `equipment/${imageName}`);
       const response = await fetch(imageUri);
@@ -55,9 +55,9 @@ const Post = ({ navigation }) => {
         description: equipmentDescription,
         price: equipmentPrice,
         location: equipmentLocation,
-        hirer: hirerName,
-        contact: hirerContact,
-        type: equipmentType,
+        hirerName: hirerName,   
+        hirerPhone: hirerContact,  
+        hirerEmail: hirerEmail,    
         imageUrl: imageUrl,
       });
 
@@ -71,6 +71,7 @@ const Post = ({ navigation }) => {
       setEquipmentLocation('');
       setHirerName('');
       setHirerContact('');
+      setHirerEmail('');
       setEquipmentType('');
       setImageUri(null);
     } catch (error) {
@@ -82,7 +83,7 @@ const Post = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Post New Equipment</Text>
-      
+
       <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
@@ -117,7 +118,7 @@ const Post = ({ navigation }) => {
           value={equipmentLocation}
           onChangeText={setEquipmentLocation}
         />
-        
+
         <View style={styles.row}>
           <TextInput
             style={[styles.input, styles.halfWidth]}
@@ -136,11 +137,19 @@ const Post = ({ navigation }) => {
 
         <TextInput
           style={styles.input}
+          placeholder="Hirer Email"
+          value={hirerEmail}
+          onChangeText={setHirerEmail}
+          keyboardType="email-address"
+        />
+
+        <TextInput
+          style={styles.input}
           placeholder="Equipment Type"
           value={equipmentType}
           onChangeText={setEquipmentType}
         />
-        
+
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
@@ -148,6 +157,7 @@ const Post = ({ navigation }) => {
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -171,8 +181,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 2,
     borderColor: '#ccc',
-    elevation: 4, 
-    shadowColor: '#000', 
+    elevation: 4,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -186,8 +196,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
-    elevation: 3, 
-    shadowColor: '#000', 
+    elevation: 3,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 0,
@@ -215,8 +225,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
-    elevation: 4, 
-    shadowColor: '#000', 
+    elevation: 4,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
