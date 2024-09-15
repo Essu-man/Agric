@@ -10,7 +10,8 @@ const Post = ({ navigation }) => {
   const [equipmentName, setEquipmentName] = useState('');
   const [equipmentDescription, setEquipmentDescription] = useState('');
   const [equipmentPrice, setEquipmentPrice] = useState('');
-  const [equipmentLocation, setEquipmentLocation] = useState('');
+  const [equipmentCity, setEquipmentCity] = useState('');  // State for city
+  const [equipmentRegion, setEquipmentRegion] = useState('');  // State for region
   const [hirerName, setHirerName] = useState('');
   const [hirerContact, setHirerContact] = useState('');
   const [hirerEmail, setHirerEmail] = useState('');
@@ -37,7 +38,7 @@ const Post = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
-    if (!equipmentName || !equipmentDescription || !equipmentPrice || !equipmentLocation || !hirerName || !hirerContact || !hirerEmail || !equipmentType) {
+    if (!equipmentName || !equipmentDescription || !equipmentPrice || !equipmentCity || !equipmentRegion || !hirerName || !hirerContact || !hirerEmail || !equipmentType) {
       alert('Please fill out all fields');
       return;
     }
@@ -54,7 +55,8 @@ const Post = ({ navigation }) => {
         name: equipmentName,
         description: equipmentDescription,
         price: equipmentPrice,
-        location: equipmentLocation,
+        city: equipmentCity,      // Storing city
+        region: equipmentRegion,  // Storing region
         hirerName: hirerName,   
         hirerPhone: hirerContact,  
         hirerEmail: hirerEmail,    
@@ -64,11 +66,11 @@ const Post = ({ navigation }) => {
       alert('Equipment added successfully!');
       navigation.navigate('Home');
 
-     
       setEquipmentName('');
       setEquipmentDescription('');
       setEquipmentPrice('');
-      setEquipmentLocation('');
+      setEquipmentCity('');    // Reset city
+      setEquipmentRegion('');  // Reset region
       setHirerName('');
       setHirerContact('');
       setHirerEmail('');
@@ -112,12 +114,22 @@ const Post = ({ navigation }) => {
           onChangeText={setEquipmentPrice}
           keyboardType="numeric"
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Location"
-          value={equipmentLocation}
-          onChangeText={setEquipmentLocation}
-        />
+        
+        {/* City and Region Inputs in Row */}
+        <View style={styles.row}>
+          <TextInput
+            style={[styles.input, styles.halfWidth]}
+            placeholder="City"
+            value={equipmentCity}
+            onChangeText={setEquipmentCity}
+          />
+          <TextInput
+            style={[styles.input, styles.halfWidth]}
+            placeholder="Region"
+            value={equipmentRegion}
+            onChangeText={setEquipmentRegion}
+          />
+        </View>
 
         <View style={styles.row}>
           <TextInput
