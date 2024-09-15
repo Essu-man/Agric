@@ -23,14 +23,6 @@ const EquipmentDetails = () => {
     alert(`Email: ${equipment.hirerEmail}`);
   };
 
-  const handleBookNowPress = () => {
-    navigation.navigate('OrderDetails', {
-      equipmentId: equipment.id,
-      baseCostPerDay: equipment.price,
-      location: equipment.location,
-    });
-  };
-
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -80,9 +72,12 @@ const EquipmentDetails = () => {
         </View>
       </View>
 
+      {/* Updated Equipment Type Section */}
       <View style={styles.section}>
-        <Text style={styles.subHeader}>Category</Text>
-        <Text style={styles.categoryText}>{equipment.type}</Text>
+        <Text style={styles.subHeader}>Equipment Type</Text>
+        <TouchableOpacity style={styles.typeButton}>
+          <Text style={styles.typeButtonText}>{equipment.type}</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
@@ -103,15 +98,13 @@ const EquipmentDetails = () => {
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTitle}>Terms & Conditions</Text>
             <Text style={styles.infoText}>
-              By booking this equipment, you agree to our terms and conditions. Ensure proper handling and timely return to avoid penalties.
+              By using this equipment, you agree to our terms and conditions. Ensure proper handling and timely return to avoid penalties.
             </Text>
           </View>
         </View>
       </View>
-
-      <TouchableOpacity style={styles.bookButton} onPress={handleBookNowPress}>
-        <Text style={styles.bookButtonText}>Book Now</Text>
-      </TouchableOpacity>
+      
+      {/* Book Now Button Removed */}
     </ScrollView>
   );
 };
@@ -221,20 +214,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  categoryText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  bookButton: {
+  typeButton: {
     backgroundColor: '#3d9d75',
     borderRadius: 10,
-    padding: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     alignItems: 'center',
+    justifyContent: 'center',  
+    alignSelf: 'center',      
+    width: '100%',           
+    maxWidth: 250,             
+    height: 50,                
   },
-  bookButtonText: {
+  typeButtonText: {
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',      
   },
 });
 
