@@ -99,7 +99,6 @@ const Home = ({ navigation }) => {
       </TouchableOpacity>
       <View style={styles.equipmentDetails}>
         <Text style={styles.equipmentName}>{item.name}</Text>
-        <Text style={styles.equipmentType}>{item.type}</Text>
         <View style={styles.equipmentLocationContainer}>
           <Ionicons name="location-outline" size={16} color="#888" />
           <Text style={styles.equipmentLocation}>{item.location}</Text>
@@ -110,7 +109,7 @@ const Home = ({ navigation }) => {
             style={styles.bookButton}
             onPress={() => handleEquipmentPress(item)}
           >
-            <Text style={styles.bookButtonText}>Book Now</Text>
+            <Text style={styles.bookButtonText}>View</Text>
           </TouchableOpacity>
         </View>
       </View>
