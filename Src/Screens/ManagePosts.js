@@ -89,10 +89,10 @@ const ManagePosts = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Manage Your Posts</Text>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
+        <Text style={styles.header}>Manage Your Posts</Text>
       </View>
       {loading ? (
         <Text>Loading...</Text>
@@ -119,17 +119,21 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 50,
   },
   header: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
     flex: 1,
+    textAlign: 'center',
+    marginBottom: -60,
+
   },
   backButton: {
     padding: 10,
-    marginLeft: -10,
+    marginRight: 10,
+    
   },
   list: {
     paddingBottom: 20,
