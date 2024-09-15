@@ -109,7 +109,6 @@ const EquipmentDetails = () => {
         </View>
       </View>
 
-      {/* Modal for Phone/Email Popup */}
       <Modal
         animationType="slide"
         transparent={true}
