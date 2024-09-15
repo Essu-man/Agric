@@ -7,35 +7,40 @@ import { useNavigation } from '@react-navigation/native';
 
 const ManagePosts = () => {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigation = useNavigation();
   const auth = getAuth();
   const db = getFirestore();
 
   useEffect(() => {
     const fetchPosts = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
+      setError(''); 
       try {
         const user = auth.currentUser;
         if (!user) {
           throw new Error('User is not authenticated');
         }
 
-        const postsRef = collection(db, 'posts');
+        const postsRef = collection(db, 'equipment'); 
         const q = query(postsRef, where('userId', '==', user.uid));
         const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-          throw new Error('No posts found for this user');
-        }
+     
+        console.log('Query Snapshot:', querySnapshot.docs.map(doc => doc.data()));
 
-        const postsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setPosts(postsList);
+        if (querySnapshot.empty) {
+          setError('No posts found for this user.');
+        } else {
+          const postsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setPosts(postsList);
+        }
       } catch (error) {
         console.error('Error fetching posts:', error.message);
-        Alert.alert('Error', `Error fetching posts: ${error.message}`);
+        setError('Error fetching posts. Please try again later.');
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
 
@@ -48,7 +53,7 @@ const ManagePosts = () => {
 
   const renderPostItem = ({ item }) => (
     <View style={styles.postItem}>
-      <Text style={styles.postTitle}>{item.title}</Text>
+      <Text style={styles.postTitle}>{item.name}</Text>
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => handleEditPost(item.id)}
@@ -64,6 +69,8 @@ const ManagePosts = () => {
       <Text style={styles.header}>Manage Your Posts</Text>
       {loading ? (
         <Text>Loading...</Text>
+      ) : error ? (
+        <Text style={styles.errorText}>{error}</Text>
       ) : (
         <FlatList
           data={posts}
@@ -121,6 +128,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     marginRight: 5,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    textAlign: 'center',
   },
 });
 
