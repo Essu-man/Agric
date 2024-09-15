@@ -9,6 +9,7 @@ import Settings from '../Nav/Settings';
 import OrderDetails from '../Screens/OrderDetails';
 import ManagePosts from '../Screens/ManagePosts';
 import EditPost from '../Screens/EditPost';
+import ChangePassword from '../Screens/ChangePassword';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -72,6 +73,8 @@ const AppNavigator = () => {
       <Stack.Screen name="OrderDetails" component={OrderDetails} options={{ headerShown: false }} />
       <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
       <Stack.Screen name="ManagePosts" component={ManagePosts} options={{ headerShown: false }} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
+
 
     </Stack.Navigator>
   );
