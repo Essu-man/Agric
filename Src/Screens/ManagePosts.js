@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   header: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
     flex: 1,
@@ -133,6 +133,10 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 10,
     marginRight: 10,
+    position: 'absolute',
+    left: 0,
+    top: 10, 
+    padding: 10,
     
   },
   list: {
