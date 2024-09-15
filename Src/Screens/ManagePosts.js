@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, FlatList, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 
 const ManagePosts = () => {
@@ -27,7 +27,6 @@ const ManagePosts = () => {
         const q = query(postsRef, where('userId', '==', user.uid));
         const querySnapshot = await getDocs(q);
 
-     
         console.log('Query Snapshot:', querySnapshot.docs.map(doc => doc.data()));
 
         if (querySnapshot.empty) {
@@ -51,22 +50,50 @@ const ManagePosts = () => {
     navigation.navigate('EditPost', { postId });
   };
 
+  const handleDeletePost = async (postId) => {
+    try {
+      await deleteDoc(doc(db, 'equipment', postId));
+      setPosts(posts.filter(post => post.id !== postId));
+      Alert.alert('Success', 'Post deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting post:', error.message);
+      Alert.alert('Error', 'Error deleting post. Please try again later.');
+    }
+  };
+
   const renderPostItem = ({ item }) => (
     <View style={styles.postItem}>
-      <Text style={styles.postTitle}>{item.name}</Text>
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => handleEditPost(item.id)}
-      >
-        <Text style={styles.editButtonText}>Edit</Text>
-        <Ionicons name="pencil" size={20} color="#fff" />
-      </TouchableOpacity>
+      <Image source={{ uri: item.imageUrl }} style={styles.postImage} />
+      <View style={styles.postDetails}>
+        <Text style={styles.postTitle}>{item.name}</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => handleEditPost(item.id)}
+          >
+            <Text style={styles.buttonText}>Edit</Text>
+            <Ionicons name="pencil" size={20} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => handleDeletePost(item.id)}
+          >
+            <Text style={styles.buttonText}>Delete</Text>
+            <Ionicons name="trash" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Manage Your Posts</Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Manage Your Posts</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+      </View>
       {loading ? (
         <Text>Loading...</Text>
       ) : error ? (
@@ -89,11 +116,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     padding: 20,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   header: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 20,
     color: '#333',
+    flex: 1,
+  },
+  backButton: {
+    padding: 10,
+    marginLeft: -10,
   },
   list: {
     paddingBottom: 20,
@@ -104,17 +140,29 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
   },
+  postImage: {
+    width: 80,
+    height: 60,
+    borderRadius: 15,
+    marginRight: 15,
+  },
+  postDetails: {
+    flex: 1,
+  },
   postTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
   },
   editButton: {
     backgroundColor: '#3d9d75',
@@ -123,8 +171,17 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
+    marginRight: 10,
   },
-  editButtonText: {
+  deleteButton: {
+    backgroundColor: '#d9534f',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonText: {
     color: '#fff',
     fontSize: 16,
     marginRight: 5,
