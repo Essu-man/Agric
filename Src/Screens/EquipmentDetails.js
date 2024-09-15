@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ScrollView,
   Image,
@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Modal,
 } from 'react-native';
 
 const EquipmentDetails = () => {
@@ -15,12 +16,17 @@ const EquipmentDetails = () => {
   const route = useRoute();
   const { equipment } = route.params;
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState({ type: '', value: '' });
+
   const handleContactPress = () => {
-    alert(`Contact: ${equipment.hirerPhone}`);
+    setModalContent({ type: 'Phone', value: equipment.hirerPhone });
+    setModalVisible(true);
   };
 
   const handleEmailPress = () => {
-    alert(`Email: ${equipment.hirerEmail}`);
+    setModalContent({ type: 'Email', value: equipment.hirerEmail });
+    setModalVisible(true);
   };
 
   return (
@@ -72,7 +78,6 @@ const EquipmentDetails = () => {
         </View>
       </View>
 
-      {/* Updated Equipment Type Section */}
       <View style={styles.section}>
         <Text style={styles.subHeader}>Equipment Type</Text>
         <TouchableOpacity style={styles.typeButton}>
@@ -103,8 +108,27 @@ const EquipmentDetails = () => {
           </View>
         </View>
       </View>
-      
-      {/* Book Now Button Removed */}
+
+      {/* Modal for Phone/Email Popup */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{modalContent.type}</Text>
+            <Text style={styles.modalText}>{modalContent.value}</Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -137,8 +161,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   equipmentImage: {
-    width: 250,
-    height: 150,
+    width: 350,
+    height: 250,
     borderRadius: 10,
   },
   imageFallback: {
@@ -213,6 +237,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 10,
+    alignSelf: 'flex-start',  
+    marginLeft: 20, 
   },
   typeButton: {
     backgroundColor: '#3d9d75',
@@ -221,16 +247,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',  
-        
     width: '100%',           
     maxWidth: 90,             
-    height: 35,                
+    height: 35, 
+    alignSelf: 'flex-start',  
+    marginLeft: 20,                
   },
   typeButtonText: {
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',      
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 250,
+    padding: 20,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: '#3d9d75',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  closeButtonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
   },
 });
 
