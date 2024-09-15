@@ -1,31 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, FlatList } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
 
 const ManagePosts = () => {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true); // Added loading state
   const navigation = useNavigation();
   const auth = getAuth();
   const db = getFirestore();
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true); // Start loading
       try {
         const user = auth.currentUser;
-        if (user) {
-          const postsRef = collection(db, 'posts');
-          const q = query(postsRef, where('userId', '==', user.uid));
-          const querySnapshot = await getDocs(q);
-
-          const postsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setPosts(postsList);
+        if (!user) {
+          throw new Error('User is not authenticated');
         }
+
+        const postsRef = collection(db, 'posts');
+        const q = query(postsRef, where('userId', '==', user.uid));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          throw new Error('No posts found for this user');
+        }
+
+        const postsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setPosts(postsList);
       } catch (error) {
-        console.error('Error fetching posts:', error);
-        Alert.alert('Error', 'Could not fetch posts.');
+        console.error('Error fetching posts:', error.message);
+        Alert.alert('Error', `Error fetching posts: ${error.message}`);
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
 
@@ -52,12 +62,16 @@ const ManagePosts = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Manage Your Posts</Text>
-      <FlatList
-        data={posts}
-        renderItem={renderPostItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
-      />
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : (
+        <FlatList
+          data={posts}
+          renderItem={renderPostItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.list}
+        />
+      )}
     </View>
   );
 };

@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { db, storage } from '../Firebase/FirebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 
 const Post = ({ navigation }) => {
   const [equipmentName, setEquipmentName] = useState('');
   const [equipmentDescription, setEquipmentDescription] = useState('');
   const [equipmentPrice, setEquipmentPrice] = useState('');
-  const [equipmentCity, setEquipmentCity] = useState('');  // State for city
-  const [equipmentRegion, setEquipmentRegion] = useState('');  // State for region
+  const [equipmentCity, setEquipmentCity] = useState('');
+  const [equipmentRegion, setEquipmentRegion] = useState('');
   const [hirerName, setHirerName] = useState('');
   const [hirerContact, setHirerContact] = useState('');
   const [hirerEmail, setHirerEmail] = useState('');
@@ -44,33 +45,47 @@ const Post = ({ navigation }) => {
     }
 
     try {
-      const imageName = imageUri.substring(imageUri.lastIndexOf('/') + 1);
-      const storageRef = ref(storage, `equipment/${imageName}`);
-      const response = await fetch(imageUri);
-      const blob = await response.blob();
-      await uploadBytes(storageRef, blob);
-      const imageUrl = await getDownloadURL(storageRef);
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        alert('User is not authenticated');
+        return;
+      }
+
+      const imageName = imageUri ? imageUri.substring(imageUri.lastIndexOf('/') + 1) : '';
+      let imageUrl = '';
+
+      if (imageUri) {
+        const storageRef = ref(storage, `equipment/${imageName}`);
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        await uploadBytes(storageRef, blob);
+        imageUrl = await getDownloadURL(storageRef);
+      }
 
       await addDoc(collection(db, 'equipment'), {
         name: equipmentName,
         description: equipmentDescription,
         price: equipmentPrice,
-        city: equipmentCity,      // Storing city
-        region: equipmentRegion,  // Storing region
-        hirerName: hirerName,   
-        hirerPhone: hirerContact,  
-        hirerEmail: hirerEmail,    
+        city: equipmentCity,
+        region: equipmentRegion,
+        hirerName: hirerName,
+        hirerPhone: hirerContact,
+        hirerEmail: hirerEmail,
         imageUrl: imageUrl,
+        userId: user.uid, // Ensure userId is stored
       });
 
       alert('Equipment added successfully!');
       navigation.navigate('Home');
 
+      // Clear form
       setEquipmentName('');
       setEquipmentDescription('');
       setEquipmentPrice('');
-      setEquipmentCity('');    // Reset city
-      setEquipmentRegion('');  // Reset region
+      setEquipmentCity('');
+      setEquipmentRegion('');
       setHirerName('');
       setHirerContact('');
       setHirerEmail('');
@@ -78,7 +93,7 @@ const Post = ({ navigation }) => {
       setImageUri(null);
     } catch (error) {
       console.error('Error adding equipment:', error);
-      alert('Error adding equipment.');
+      Alert.alert('Error adding equipment', error.message);
     }
   };
 
@@ -115,7 +130,6 @@ const Post = ({ navigation }) => {
           keyboardType="numeric"
         />
         
-        {/* City and Region Inputs in Row */}
         <View style={styles.row}>
           <TextInput
             style={[styles.input, styles.halfWidth]}

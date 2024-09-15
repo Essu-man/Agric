@@ -29,9 +29,6 @@ const EquipmentDetails = () => {
     setModalVisible(true);
   };
 
-  // Concatenate city and region for display
-  const location = `${equipment.city}, ${equipment.region}`;
-
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -76,7 +73,7 @@ const EquipmentDetails = () => {
           <Ionicons name="location" size={24} color="#3d9d75" style={styles.icon} />
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTitle}>Location</Text>
-            <Text style={styles.infoText}>{location}</Text> {/* Updated location display */}
+            <Text style={styles.infoText}>{equipment.location}</Text>
           </View>
         </View>
       </View>
@@ -111,6 +108,7 @@ const EquipmentDetails = () => {
           </View>
         </View>
       </View>
+
 
       <Modal
         animationType="slide"
