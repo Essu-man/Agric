@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   subHeader: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 10,
   },
@@ -221,10 +221,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',  
-    alignSelf: 'center',      
+        
     width: '100%',           
-    maxWidth: 250,             
-    height: 50,                
+    maxWidth: 90,             
+    height: 35,                
   },
   typeButtonText: {
     color: '#FFF',
