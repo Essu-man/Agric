@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { db, storage } from '../Firebase/FirebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
 
 const Post = ({ navigation }) => {
   const [equipmentName, setEquipmentName] = useState('');
   const [equipmentDescription, setEquipmentDescription] = useState('');
   const [equipmentPrice, setEquipmentPrice] = useState('');
-  const [equipmentCity, setEquipmentCity] = useState('');
-  const [equipmentRegion, setEquipmentRegion] = useState('');
+  const [equipmentLocation, setEquipmentLocation] = useState(''); // Combined field
   const [hirerName, setHirerName] = useState('');
   const [hirerContact, setHirerContact] = useState('');
   const [hirerEmail, setHirerEmail] = useState('');
@@ -39,53 +37,39 @@ const Post = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
-    if (!equipmentName || !equipmentDescription || !equipmentPrice || !equipmentCity || !equipmentRegion || !hirerName || !hirerContact || !hirerEmail || !equipmentType) {
+    if (!equipmentName || !equipmentDescription || !equipmentPrice || !equipmentLocation || !hirerName || !hirerContact || !hirerEmail || !equipmentType) {
       alert('Please fill out all fields');
       return;
     }
 
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
-      if (!user) {
-        alert('User is not authenticated');
-        return;
-      }
-
-      const imageName = imageUri ? imageUri.substring(imageUri.lastIndexOf('/') + 1) : '';
-      let imageUrl = '';
-
-      if (imageUri) {
-        const storageRef = ref(storage, `equipment/${imageName}`);
-        const response = await fetch(imageUri);
-        const blob = await response.blob();
-        await uploadBytes(storageRef, blob);
-        imageUrl = await getDownloadURL(storageRef);
-      }
+      const imageName = imageUri.substring(imageUri.lastIndexOf('/') + 1);
+      const storageRef = ref(storage, `equipment/${imageName}`);
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      await uploadBytes(storageRef, blob);
+      const imageUrl = await getDownloadURL(storageRef);
 
       await addDoc(collection(db, 'equipment'), {
         name: equipmentName,
         description: equipmentDescription,
         price: equipmentPrice,
-        city: equipmentCity,
-        region: equipmentRegion,
-        hirerName: hirerName,
+        location: equipmentLocation, // Save combined location
+        hirerName,
         hirerPhone: hirerContact,
-        hirerEmail: hirerEmail,
-        imageUrl: imageUrl,
-        userId: user.uid, // Ensure userId is stored
+        hirerEmail,
+        type: equipmentType,
+        imageUrl,
       });
 
       alert('Equipment added successfully!');
       navigation.navigate('Home');
 
-      // Clear form
+      // Reset form fields
       setEquipmentName('');
       setEquipmentDescription('');
       setEquipmentPrice('');
-      setEquipmentCity('');
-      setEquipmentRegion('');
+      setEquipmentLocation(''); // Reset combined field
       setHirerName('');
       setHirerContact('');
       setHirerEmail('');
@@ -93,7 +77,7 @@ const Post = ({ navigation }) => {
       setImageUri(null);
     } catch (error) {
       console.error('Error adding equipment:', error);
-      Alert.alert('Error adding equipment', error.message);
+      alert('Error adding equipment.');
     }
   };
 
@@ -129,21 +113,12 @@ const Post = ({ navigation }) => {
           onChangeText={setEquipmentPrice}
           keyboardType="numeric"
         />
-        
-        <View style={styles.row}>
-          <TextInput
-            style={[styles.input, styles.halfWidth]}
-            placeholder="City"
-            value={equipmentCity}
-            onChangeText={setEquipmentCity}
-          />
-          <TextInput
-            style={[styles.input, styles.halfWidth]}
-            placeholder="Region"
-            value={equipmentRegion}
-            onChangeText={setEquipmentRegion}
-          />
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Location"
+          value={equipmentLocation}
+          onChangeText={setEquipmentLocation}
+        />
 
         <View style={styles.row}>
           <TextInput
@@ -183,7 +158,6 @@ const Post = ({ navigation }) => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

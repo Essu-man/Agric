@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React from 'react';
 import {
   ScrollView,
   Image,
@@ -8,7 +8,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Modal,
 } from 'react-native';
 
 const EquipmentDetails = () => {
@@ -16,17 +15,20 @@ const EquipmentDetails = () => {
   const route = useRoute();
   const { equipment } = route.params;
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalContent, setModalContent] = useState({ type: '', value: '' });
-
   const handleContactPress = () => {
-    setModalContent({ type: 'Phone', value: equipment.hirerPhone });
-    setModalVisible(true);
+    alert(`Contact: ${equipment.hirerPhone}`);
   };
 
   const handleEmailPress = () => {
-    setModalContent({ type: 'Email', value: equipment.hirerEmail });
-    setModalVisible(true);
+    alert(`Email: ${equipment.hirerEmail}`);
+  };
+
+  const handleBookNowPress = () => {
+    navigation.navigate('OrderDetails', {
+      equipmentId: equipment.id,
+      baseCostPerDay: equipment.price,
+      location: equipment.location, 
+    });
   };
 
   return (
@@ -79,10 +81,8 @@ const EquipmentDetails = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.subHeader}>Equipment Type</Text>
-        <TouchableOpacity style={styles.typeButton}>
-          <Text style={styles.typeButtonText}>{equipment.type}</Text>
-        </TouchableOpacity>
+        <Text style={styles.subHeader}>Category</Text>
+        <Text style={styles.categoryText}>{equipment.type}</Text>
       </View>
 
       <View style={styles.section}>
@@ -91,44 +91,15 @@ const EquipmentDetails = () => {
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTitle}>Tool Info</Text>
             <Text style={styles.infoText}>
-              {equipment.description || 'No description available.'}
+              {equipment.description}
             </Text>
           </View>
         </View>
       </View>
 
-      <View style={styles.section}>
-        <View style={styles.infoCard}>
-          <Ionicons name="document-text" size={24} color="#3d9d75" style={styles.icon} />
-          <View style={styles.infoTextContainer}>
-            <Text style={styles.infoTitle}>Terms & Conditions</Text>
-            <Text style={styles.infoText}>
-              By using this equipment, you agree to our terms and conditions. Ensure proper handling and timely return to avoid penalties.
-            </Text>
-          </View>
-        </View>
-      </View>
-
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{modalContent.type}</Text>
-            <Text style={styles.modalText}>{modalContent.value}</Text>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <TouchableOpacity style={styles.bookNowButton} onPress={handleBookNowPress}>
+        <Text style={styles.bookNowText}>Book Now</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -161,8 +132,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   equipmentImage: {
-    width: 350,
-    height: 250,
+    width: 250,
+    height: 150,
     borderRadius: 10,
   },
   imageFallback: {
@@ -234,61 +205,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   subHeader: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    alignSelf: 'flex-start',  
-    marginLeft: 20, 
-  },
-  typeButton: {
-    backgroundColor: '#3d9d75',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',  
-    width: '100%',           
-    maxWidth: 90,             
-    height: 35, 
-    alignSelf: 'flex-start',  
-    marginLeft: 20,                
-  },
-  typeButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',      
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: 250,
-    padding: 20,
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  modalText: {
+  categoryText: {
     fontSize: 16,
-    marginBottom: 20,
+    color: '#333',
   },
-  closeButton: {
+  bookNowButton: {
     backgroundColor: '#3d9d75',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
     borderRadius: 10,
+    padding: 15,
+    alignItems: 'center',
   },
-  closeButtonText: {
+  bookNowText: {
     color: '#FFF',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });

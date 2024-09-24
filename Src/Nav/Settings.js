@@ -7,7 +7,7 @@ import { getDatabase, ref, child, get } from 'firebase/database';
 const SettingsScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false); // State to manage the modal visibility
+  const [modalVisible, setModalVisible] = useState(false); 
   const auth = getAuth();
   const db = getDatabase();
 
