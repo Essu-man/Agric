@@ -23,14 +23,6 @@ const EquipmentDetails = () => {
     alert(`Email: ${equipment.hirerEmail}`);
   };
 
-  const handleBookNowPress = () => {
-    navigation.navigate('OrderDetails', {
-      equipmentId: equipment.id,
-      baseCostPerDay: equipment.price,
-      location: equipment.location, 
-    });
-  };
-
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -81,25 +73,19 @@ const EquipmentDetails = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.subHeader}>Category</Text>
-        <Text style={styles.categoryText}>{equipment.type}</Text>
-      </View>
-
-      <View style={styles.section}>
+        <Text style={styles.subHeader}>Equipment Description</Text>
         <View style={styles.infoCard}>
           <Ionicons name="information-circle" size={24} color="#3d9d75" style={styles.icon} />
           <View style={styles.infoTextContainer}>
-            <Text style={styles.infoTitle}>Tool Info</Text>
-            <Text style={styles.infoText}>
-              {equipment.description}
-            </Text>
+            <Text style={styles.infoTitle}>Description</Text>
+            <Text style={styles.infoText}>{equipment.description}</Text>
+            <View style={styles.typeBadge}>
+              <Text style={styles.typeBadgeText}>{equipment.type}</Text>
+            </View>
           </View>
         </View>
       </View>
 
-      <TouchableOpacity style={styles.bookNowButton} onPress={handleBookNowPress}>
-        <Text style={styles.bookNowText}>Book Now</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -178,7 +164,7 @@ const styles = StyleSheet.create({
     padding: 15,
     flex: 1,
     marginHorizontal: 10,
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -186,7 +172,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
   icon: {
-    marginRight: 10, 
+    marginRight: 10,
   },
   infoTextContainer: {
     flex: 1,
@@ -209,20 +195,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  categoryText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  bookNowButton: {
+  typeBadge: {
     backgroundColor: '#3d9d75',
-    borderRadius: 10,
-    padding: 15,
-    alignItems: 'center',
+    borderRadius: 15,
+    padding: 10,
+    alignSelf: 'flex-start',
+    marginTop: 10,
   },
-  bookNowText: {
-    color: '#FFF',
-    fontSize: 16,
+  typeBadgeText: {
+    color: '#fff',
     fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 

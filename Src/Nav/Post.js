@@ -10,7 +10,7 @@ const Post = ({ navigation }) => {
   const [equipmentName, setEquipmentName] = useState('');
   const [equipmentDescription, setEquipmentDescription] = useState('');
   const [equipmentPrice, setEquipmentPrice] = useState('');
-  const [equipmentLocation, setEquipmentLocation] = useState(''); // Combined field
+  const [equipmentLocation, setEquipmentLocation] = useState(''); 
   const [hirerName, setHirerName] = useState('');
   const [hirerContact, setHirerContact] = useState('');
   const [hirerEmail, setHirerEmail] = useState('');
@@ -54,7 +54,7 @@ const Post = ({ navigation }) => {
         name: equipmentName,
         description: equipmentDescription,
         price: equipmentPrice,
-        location: equipmentLocation, // Save combined location
+        location: equipmentLocation, 
         hirerName,
         hirerPhone: hirerContact,
         hirerEmail,
@@ -65,11 +65,11 @@ const Post = ({ navigation }) => {
       alert('Equipment added successfully!');
       navigation.navigate('Home');
 
-      // Reset form fields
+
       setEquipmentName('');
       setEquipmentDescription('');
       setEquipmentPrice('');
-      setEquipmentLocation(''); // Reset combined field
+      setEquipmentLocation('');
       setHirerName('');
       setHirerContact('');
       setHirerEmail('');
