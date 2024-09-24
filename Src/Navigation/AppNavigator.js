@@ -10,6 +10,7 @@ import OrderDetails from '../Screens/OrderDetails';
 import ManagePosts from '../Screens/ManagePosts';
 import EditPost from '../Screens/EditPost';
 import ChangePassword from '../Screens/ChangePassword';
+import Labour from '../Nav/Labour';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -31,6 +32,9 @@ const TabNavigator = () => {
             case 'Settings':
               iconName = focused ? 'settings' : 'settings-outline';
               break;
+              case 'Labour': // Add case for Labour
+              iconName = focused ? 'people' : 'people-outline'; // Choose an appropriate icon
+              break;
             default:
               iconName = 'home-outline';
           }
@@ -50,7 +54,9 @@ const TabNavigator = () => {
     >
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Post" component={Post} />
+      <Tab.Screen name= "Labour" component={Labour}/>
       <Tab.Screen name="Settings" component={Settings} />
+
     </Tab.Navigator>
   );
 };
@@ -74,6 +80,7 @@ const AppNavigator = () => {
       <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
       <Stack.Screen name="ManagePosts" component={ManagePosts} options={{ headerShown: false }} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
+      <Stack.Screen name="Labour" component={Labour} options={{ headerShown: false }} />
 
 
     </Stack.Navigator>
