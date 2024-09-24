@@ -14,7 +14,7 @@ const Labour = () => {
       </View>
 
       <View style={styles.middleContainer}>
-        <Text style={styles.comingSoon}>Coming Soon</Text>
+        <Text style={styles.comingSoon}>Coming Soon...</Text>
       </View>
     </View>
   );
@@ -49,8 +49,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   comingSoon: {
-    fontSize: 36,
-    fontWeight: 'bold',
+    fontSize: 26,
     color: '#3d9d75',
   },
 });
