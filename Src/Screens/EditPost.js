@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ScrollView, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ScrollView, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -10,7 +10,7 @@ const EditPost = ({ route, navigation }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState(''); // Changed to single location field
   const [hirerName, setHirerName] = useState('');
   const [hirerPhone, setHirerPhone] = useState('');
   const [hirerEmail, setHirerEmail] = useState('');
@@ -38,7 +38,7 @@ const EditPost = ({ route, navigation }) => {
           setName(equipmentData.name);
           setDescription(equipmentData.description);
           setPrice(equipmentData.price);
-          setLocation(equipmentData.location);
+          setLocation(equipmentData.location); // Use the location field
           setHirerName(equipmentData.hirerName);
           setHirerPhone(equipmentData.hirerPhone);
           setHirerEmail(equipmentData.hirerEmail);
@@ -78,7 +78,7 @@ const EditPost = ({ route, navigation }) => {
         name,
         description,
         price,
-        location,
+        location, // Updated to use the location field
         hirerName,
         hirerPhone,
         hirerEmail,
@@ -107,68 +107,79 @@ const EditPost = ({ route, navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Edit Equipment</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Header with Back Button and Title */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backButtonText}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.title}>Edit Equipment</Text>
+        </View>
 
-      <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.image} />
-        ) : (
-          <Image source={{ uri: equipment.length > 0 ? equipment[0].imageUrl : '' }} style={styles.image} />
-        )}
-      </TouchableOpacity>
-
-      <View style={styles.card}>
-        <TextInput
-          style={styles.input}
-          placeholder="Equipment Name"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Equipment Description"
-          value={description}
-          onChangeText={setDescription}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Price per Day (GHS)"
-          value={price}
-          onChangeText={setPrice}
-          keyboardType="numeric"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Location"
-          value={location}
-          onChangeText={setLocation}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Hirer Name"
-          value={hirerName}
-          onChangeText={setHirerName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Hirer Phone"
-          value={hirerPhone}
-          onChangeText={setHirerPhone}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Hirer Email"
-          value={hirerEmail}
-          onChangeText={setHirerEmail}
-          keyboardType="email-address"
-        />
-
-        <TouchableOpacity style={styles.submitButton} onPress={handleUpdate}>
-          <Text style={styles.submitButtonText}>Update Equipment</Text>
+        <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.image} />
+          ) : (
+            <Image source={{ uri: equipment.length > 0 ? equipment[0].imageUrl : '' }} style={styles.image} />
+          )}
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+
+        <View style={styles.card}>
+          <TextInput
+            style={styles.input}
+            placeholder="Equipment Name"
+            value={name}
+            onChangeText={setName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Equipment Description"
+            value={description}
+            onChangeText={setDescription}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Price per Day (GHS)"
+            value={price}
+            onChangeText={setPrice}
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Location"
+            value={location} // Updated to location
+            onChangeText={setLocation}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Hirer Name"
+            value={hirerName}
+            onChangeText={setHirerName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Hirer Phone"
+            value={hirerPhone}
+            onChangeText={setHirerPhone}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Hirer Email"
+            value={hirerEmail}
+            onChangeText={setHirerEmail}
+            keyboardType="email-address"
+          />
+
+          <TouchableOpacity style={styles.submitButton} onPress={handleUpdate}>
+            <Text style={styles.submitButtonText}>Update Equipment</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -179,12 +190,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     justifyContent: 'center',
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  backButton: {
+    marginRight: 10,
+  },
+  backButtonText: {
+    fontSize: 34,
+    color: '#000', 
+  },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 24,
     textAlign: 'center',
+    flex: 1,
   },
   card: {
     backgroundColor: '#fff',
