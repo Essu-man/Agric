@@ -72,16 +72,25 @@ const EquipmentDetails = () => {
         </View>
       </View>
 
+      {/* Tool Info Box */}
       <View style={styles.section}>
-        <Text style={styles.subHeader}>Equipment Description</Text>
+        <Text style={styles.subHeader}>Tool Info</Text>
+        <View style={styles.infoCard}>
+          <Ionicons name="construct" size={24} color="#3d9d75" style={styles.icon} />
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTitle}>{equipment.name}</Text>
+            <Text style={styles.infoText}>{equipment.type}</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Equipment Description Box */}
+      <View style={styles.section}>
         <View style={styles.infoCard}>
           <Ionicons name="information-circle" size={24} color="#3d9d75" style={styles.icon} />
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTitle}>Description</Text>
             <Text style={styles.infoText}>{equipment.description}</Text>
-            <View style={styles.typeBadge}>
-              <Text style={styles.typeBadgeText}>{equipment.type}</Text>
-            </View>
           </View>
         </View>
       </View>
@@ -194,18 +203,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-  },
-  typeBadge: {
-    backgroundColor: '#3d9d75',
-    borderRadius: 15,
-    padding: 10,
-    alignSelf: 'flex-start',
-    marginTop: 10,
-  },
-  typeBadgeText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
   },
 });
 
