@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { db, storage } from '../Firebase/FirebaseConfig';
@@ -65,7 +65,7 @@ const Post = ({ navigation }) => {
       alert('Equipment added successfully!');
       navigation.navigate('Home');
 
-
+      // Clear the input fields
       setEquipmentName('');
       setEquipmentDescription('');
       setEquipmentPrice('');
@@ -82,82 +82,88 @@ const Post = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Post New Equipment</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Post New Equipment</Text>
 
-      <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.image} />
-        ) : (
-          <Ionicons name="camera" size={40} color="#888" />
-        )}
-      </TouchableOpacity>
-
-      <View style={styles.card}>
-        <TextInput
-          style={styles.input}
-          placeholder="Equipment Name"
-          value={equipmentName}
-          onChangeText={setEquipmentName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Equipment Description"
-          value={equipmentDescription}
-          onChangeText={setEquipmentDescription}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Equipment Price (GHS)"
-          value={equipmentPrice}
-          onChangeText={setEquipmentPrice}
-          keyboardType="numeric"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Location"
-          value={equipmentLocation}
-          onChangeText={setEquipmentLocation}
-        />
-
-        <View style={styles.row}>
-          <TextInput
-            style={[styles.input, styles.halfWidth]}
-            placeholder="Hirer Name"
-            value={hirerName}
-            onChangeText={setHirerName}
-          />
-          <TextInput
-            style={[styles.input, styles.halfWidth]}
-            placeholder="Hirer Contact"
-            value={hirerContact}
-            onChangeText={setHirerContact}
-            keyboardType="phone-pad"
-          />
-        </View>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Hirer Email"
-          value={hirerEmail}
-          onChangeText={setHirerEmail}
-          keyboardType="email-address"
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Equipment Type"
-          value={equipmentType}
-          onChangeText={setEquipmentType}
-        />
-
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit</Text>
+        <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.image} />
+          ) : (
+            <Ionicons name="camera" size={40} color="#888" />
+          )}
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+
+        <View style={styles.card}>
+          <TextInput
+            style={styles.input}
+            placeholder="Equipment Name"
+            value={equipmentName}
+            onChangeText={setEquipmentName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Equipment Description"
+            value={equipmentDescription}
+            onChangeText={setEquipmentDescription}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Equipment Price (GHS)"
+            value={equipmentPrice}
+            onChangeText={setEquipmentPrice}
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Location"
+            value={equipmentLocation}
+            onChangeText={setEquipmentLocation}
+          />
+
+          <View style={styles.row}>
+            <TextInput
+              style={[styles.input, styles.halfWidth]}
+              placeholder="Hirer Name"
+              value={hirerName}
+              onChangeText={setHirerName}
+            />
+            <TextInput
+              style={[styles.input, styles.halfWidth]}
+              placeholder="Hirer Contact"
+              value={hirerContact}
+              onChangeText={setHirerContact}
+              keyboardType="phone-pad"
+            />
+          </View>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Hirer Email"
+            value={hirerEmail}
+            onChangeText={setHirerEmail}
+            keyboardType="email-address"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Equipment Type"
+            value={equipmentType}
+            onChangeText={setEquipmentType}
+          />
+
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitButtonText}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -72,7 +72,7 @@ const EquipmentDetails = () => {
         </View>
       </View>
 
-      {/* Tool Info Box */}
+    
       <View style={styles.section}>
         <Text style={styles.subHeader}>Tool Info</Text>
         <View style={styles.infoCard}>
@@ -84,8 +84,9 @@ const EquipmentDetails = () => {
         </View>
       </View>
 
-      {/* Equipment Description Box */}
+     
       <View style={styles.section}>
+      <Text style={styles.subHeader}>Equipment Description</Text>
         <View style={styles.infoCard}>
           <Ionicons name="information-circle" size={24} color="#3d9d75" style={styles.icon} />
           <View style={styles.infoTextContainer}>
