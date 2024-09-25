@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ScrollView, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -10,8 +10,7 @@ const EditPost = ({ route, navigation }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [city, setCity] = useState('');
-  const [region, setRegion] = useState('');
+  const [location, setLocation] = useState('');
   const [hirerName, setHirerName] = useState('');
   const [hirerPhone, setHirerPhone] = useState('');
   const [hirerEmail, setHirerEmail] = useState('');
@@ -35,12 +34,11 @@ const EditPost = ({ route, navigation }) => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const equipmentData = docSnap.data();
-          setEquipment([equipmentData]);  // Store the fetched equipment in the array
+          setEquipment([equipmentData]);
           setName(equipmentData.name);
           setDescription(equipmentData.description);
           setPrice(equipmentData.price);
-          setCity(equipmentData.city);
-          setRegion(equipmentData.region);
+          setLocation(equipmentData.location);
           setHirerName(equipmentData.hirerName);
           setHirerPhone(equipmentData.hirerPhone);
           setHirerEmail(equipmentData.hirerEmail);
@@ -66,9 +64,8 @@ const EditPost = ({ route, navigation }) => {
       }
 
       const equipmentRef = doc(db, 'equipment', postId);
-
-      // Check if a new image is selected and upload it
       let updatedImageUrl = imageUri;
+
       if (imageUri && imageUri.startsWith('file:')) {
         const imageRef = ref(storage, `images/${Date.now()}.jpg`);
         const response = await fetch(imageUri);
@@ -81,12 +78,11 @@ const EditPost = ({ route, navigation }) => {
         name,
         description,
         price,
-        city,
-        region,
+        location,
         hirerName,
         hirerPhone,
         hirerEmail,
-        imageUrl: updatedImageUrl
+        imageUrl: updatedImageUrl,
       });
 
       Alert.alert('Success', 'Equipment details updated successfully.');
@@ -102,7 +98,7 @@ const EditPost = ({ route, navigation }) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1
+      quality: 1,
     });
 
     if (!result.canceled) {
@@ -112,105 +108,139 @@ const EditPost = ({ route, navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {equipment.map((item, index) => (
-        <View key={index}>
-          <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.image} />
-            ) : (
-              <Image source={{ uri: item.imageUrl }} style={styles.image} />
-            )}
-          </TouchableOpacity>
+      <Text style={styles.title}>Edit Equipment</Text>
 
-          <View style={styles.card}>
-            <TextInput
-              style={styles.input}
-              placeholder="Equipment Name"
-              value={name}
-              onChangeText={(text) => setName(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Equipment Description"
-              value={description}
-              onChangeText={(text) => setDescription(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Price per Day"
-              value={price}
-              onChangeText={(text) => setPrice(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="City/Town"
-              value={city}
-              onChangeText={(text) => setCity(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Region"
-              value={region}
-              onChangeText={(text) => setRegion(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Hirer Name"
-              value={hirerName}
-              onChangeText={(text) => setHirerName(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Hirer Phone"
-              value={hirerPhone}
-              onChangeText={(text) => setHirerPhone(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Hirer Email"
-              value={hirerEmail}
-              onChangeText={(text) => setHirerEmail(text)}
-            />
+      <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.image} />
+        ) : (
+          <Image source={{ uri: equipment.length > 0 ? equipment[0].imageUrl : '' }} style={styles.image} />
+        )}
+      </TouchableOpacity>
 
-            <Button title="Update Equipment" onPress={handleUpdate} />
-          </View>
-        </View>
-      ))}
+      <View style={styles.card}>
+        <TextInput
+          style={styles.input}
+          placeholder="Equipment Name"
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Equipment Description"
+          value={description}
+          onChangeText={setDescription}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Price per Day (GHS)"
+          value={price}
+          onChangeText={setPrice}
+          keyboardType="numeric"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Location"
+          value={location}
+          onChangeText={setLocation}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Hirer Name"
+          value={hirerName}
+          onChangeText={setHirerName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Hirer Phone"
+          value={hirerPhone}
+          onChangeText={setHirerPhone}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Hirer Email"
+          value={hirerEmail}
+          onChangeText={setHirerEmail}
+          keyboardType="email-address"
+        />
+
+        <TouchableOpacity style={styles.submitButton} onPress={handleUpdate}>
+          <Text style={styles.submitButtonText}>Update Equipment</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 24,
+    textAlign: 'center',
   },
   card: {
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 10,
+    borderRadius: 12,
+    padding: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 0,
     marginBottom: 20,
+  },
+  input: {
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: '#fafafa',
+  },
+  imagePicker: {
+    height: 200,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 5,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  imagePicker: {
-    alignItems: 'center',
-    marginBottom: 15,
   },
   image: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+  },
+  submitButton: {
+    backgroundColor: '#3d9d75',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
