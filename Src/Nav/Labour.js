@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const Labour = () => {
@@ -24,10 +24,8 @@ const Labour = () => {
   };
 
   const handleSubmit = () => {
-    // Handle form submission logic
     console.log(labourDetails);
-    // Close form after submission
-    setFormVisible(false);
+    setFormVisible(false); // Close form after submission
   };
 
   return (
@@ -73,14 +71,13 @@ const Labour = () => {
             onChangeText={(text) => handleInputChange('location', text)}
           />
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-              <Text style={styles.submitButtonText}>Submit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.closeButton} onPress={toggleForm}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitButtonText}>Submit</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.closeIcon} onPress={toggleForm}>
+            <Ionicons name="close-circle" size={40} color="#f44336" />
+          </TouchableOpacity>
         </ScrollView>
       )}
 
@@ -130,34 +127,21 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontSize: 16,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
   submitButton: {
     backgroundColor: '#3d9d75',
     padding: 15,
     borderRadius: 10,
-    flex: 0.45,
     alignItems: 'center',
+    marginTop: 20,
   },
   submitButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  closeButton: {
-    backgroundColor: '#f44336',
-    padding: 15,
-    borderRadius: 10,
-    flex: 0.45,
+  closeIcon: {
+    marginTop: 30,
     alignItems: 'center',
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   middleContainer: {
     flex: 1,
