@@ -192,12 +192,12 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     position: 'absolute',
-    top: 0, // Set to 0 to cover the search field
+    top: 0, 
     left: 0,
     right: 0,
     bottom: 0,
     padding: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent white
+    backgroundColor: 'rgba(255, 255, 255, 0.9)', 
     zIndex: 1,
   },
   card: {

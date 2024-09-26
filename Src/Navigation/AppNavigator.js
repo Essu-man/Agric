@@ -11,6 +11,8 @@ import ManagePosts from '../Screens/ManagePosts';
 import EditPost from '../Screens/EditPost';
 import ChangePassword from '../Screens/ChangePassword';
 import Labour from '../Nav/Labour';
+import PrivacyPolicy from'../Screens/PrivacyPolicy';
+import TermsOfService from '../Screens/TermsOfService';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -81,6 +83,8 @@ const AppNavigator = () => {
       <Stack.Screen name="ManagePosts" component={ManagePosts} options={{ headerShown: false }} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} />
       <Stack.Screen name="Labour" component={Labour} options={{ headerShown: false }} />
+      <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} options={{ headerShown: false }} />
+      <Stack.Screen name="TermsOfService" component={TermsOfService} options={{ headerShown: false }} />
 
 
     </Stack.Navigator>

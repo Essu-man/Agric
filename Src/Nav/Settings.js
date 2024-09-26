@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, Button, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from 'firebase/auth';
-import { getDatabase, ref, child, get } from 'firebase/database'; 
+import { getDatabase, ref, get } from 'firebase/database'; 
 
 const SettingsScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -105,8 +105,8 @@ const SettingsScreen = ({ navigation }) => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Contact Customer Support</Text>
-            <Text style={styles.modalText}>Email: support@yourapp.com</Text>
-            <Text style={styles.modalText}>Telephone: +1234567890</Text>
+            <Text style={styles.modalText}>Email: AgriRent2@gmail.com</Text>
+            <Text style={styles.modalText}>Telephone: 030 </Text>
             <Button title="Close" onPress={closeModal} />
           </View>
         </View>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)', // Semi-transparent background
+    backgroundColor: 'rgba(0,0,0,0.5)', 
   },
   modalContent: {
     width: '80%',
