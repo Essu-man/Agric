@@ -1,60 +1,30 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { firestore } from '../Firebase/FirebaseConfig'; 
+import { db } from '../Firebase/FirebaseConfig';
+import { collection, getDocs } from 'firebase/firestore';
 
 const Labour = ({ navigation }) => {
-  const [labourName, setLabourName] = useState('');
-  const [labourSkill, setLabourSkill] = useState('');
-  const [labourPrice, setLabourPrice] = useState('');
-  const [labourLocation, setLabourLocation] = useState('');
-  const [contact, setContact] = useState('');
+  const [labourers, setLabourers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [formVisible, setFormVisible] = useState(false);
-  const [selectedEquipment, setSelectedEquipment] = useState([]);
+  
+  useEffect(() => {
+    const fetchLabourers = async () => {
+      const labourersCollection = collection(db, 'labourers');
+      const labourersSnapshot = await getDocs(labourersCollection);
+      const labourersList = labourersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setLabourers(labourersList);
+    };
+
+    fetchLabourers();
+  }, []);
+
+  const filteredLabourers = labourers.filter(labourer => 
+    labourer.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const toggleForm = () => {
-    setFormVisible(!formVisible);
-  };
-
-  const handleSubmit = async () => {
-    if (!labourName || !labourSkill || !labourPrice || !labourLocation || !contact) {
-      alert('Please fill out all fields');
-      return;
-    }
-
-    try {
-      await firestore.collection('labourers').add({
-        name: labourName,
-        skill: labourSkill,
-        price: labourPrice,
-        location: labourLocation,
-        contact,
-        equipment: selectedEquipment,
-      });
-      alert('Labourer details submitted successfully!');
-      setFormVisible(false);
-      // Reset form fields
-      setLabourName('');
-      setLabourSkill('');
-      setLabourPrice('');
-      setLabourLocation('');
-      setContact('');
-      setSelectedEquipment([]);
-    } catch (error) {
-      console.error("Error adding document: ", error);
-      alert('Error submitting details. Please try again.');
-    }
-  };
-
-  const equipmentOptions = ['Tractor', 'Baler', 'Sprayer', 'Harvester', 'Plow'];
-
-  const handleEquipmentSelect = (equipment) => {
-    if (selectedEquipment.includes(equipment)) {
-      setSelectedEquipment(selectedEquipment.filter(item => item !== equipment));
-    } else {
-      setSelectedEquipment([...selectedEquipment, equipment]);
-    }
+    // Logic for toggling form visibility if needed
   };
 
   return (
@@ -64,87 +34,42 @@ const Labour = ({ navigation }) => {
     >
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerText}>Looking for Manpower</Text>
+          <Text style={styles.headerText}>Looking for Labourers</Text>
           <TouchableOpacity style={styles.addButton} onPress={toggleForm}>
             <Ionicons name="add" size={30} color="#fff" />
           </TouchableOpacity>
         </View>
 
-        {/* Form that covers the search field */}
-        {formVisible && (
-          <ScrollView contentContainerStyle={styles.formContainer}>
-            <View style={styles.card}>
-              <TextInput
-                style={styles.input}
-                placeholder="Labourer Name"
-                value={labourName}
-                onChangeText={setLabourName}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Skill"
-                value={labourSkill}
-                onChangeText={setLabourSkill}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Price per Day"
-                value={labourPrice}
-                onChangeText={setLabourPrice}
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Location"
-                value={labourLocation}
-                onChangeText={setLabourLocation}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Contact"
-                value={contact}
-                onChangeText={setContact}
-                keyboardType="phone-pad"
-              />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search for labourers..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+        />
 
-              <Text style={styles.equipmentText}>Equipment Type</Text>
-              <View style={styles.equipmentContainer}>
-                {equipmentOptions.map((equipment) => (
-                  <TouchableOpacity
-                    key={equipment}
-                    style={[styles.equipmentButton, selectedEquipment.includes(equipment) && styles.equipmentSelected]}
-                    onPress={() => handleEquipmentSelect(equipment)}
-                  >
-                    <Text style={[styles.equipmentButtonText, selectedEquipment.includes(equipment) && styles.selectedEquipmentText]}>
-                      {equipment}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          {filteredLabourers.map((labourer) => (
+            <View key={labourer.id} style={styles.labourerCard}>
+              <View style={styles.labourerInfo}>
+                <Text style={styles.labourerName}>{labourer.name}</Text>
+                <View style={styles.labourerSkills}>
+                  <Text style={styles.skillsLabel}>Skills: </Text>
+                  <Text style={styles.labourerSkill}>{labourer.skill}</Text>
+                </View>
+                <Text style={styles.labourerDetails}>
+                  Price: <Text style={styles.priceText}>90 GHS/Day</Text>
+                </Text>
+                <View style={styles.locationContainer}>
+                  <Ionicons name="location-outline" size={20} color="#3d9d75" />
+                  <Text style={styles.labourerLocation}>{labourer.location}</Text>
+                </View>
+                <View style={styles.contactBox}>
+                  <Text style={styles.contactBoxText}>Contact: {labourer.contact}</Text>
+                </View>
               </View>
-
-              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.closeIcon} onPress={toggleForm}>
-                <Ionicons name="close-circle" size={60} color="#ff9999" />
-              </TouchableOpacity>
             </View>
-          </ScrollView>
-        )}
-
-        {/* Search Field */}
-        {!formVisible && (
-          <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search for labourers..."
-              value={searchTerm}
-              onChangeText={setSearchTerm}
-            />
-          </View>
-        )}
+          ))}
+        </ScrollView>
       </View>
     </KeyboardAvoidingView>
   );
@@ -173,102 +98,78 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 3,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-    backgroundColor: '#fafafa',
-  },
-  searchIcon: {
-    marginRight: 10,
-  },
   searchInput: {
-    flex: 1,
-    height: 50,
-  },
-  formContainer: {
-    position: 'absolute',
-    top: 0, 
-    left: 0,
-    right: 0,
-    bottom: 0,
-    padding: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-    zIndex: 1,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-  },
-  input: {
     height: 50,
     borderColor: '#ddd',
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: 20,
     paddingHorizontal: 16,
     borderRadius: 12,
     backgroundColor: '#fafafa',
   },
-  equipmentText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+  scrollContainer: {
+    paddingBottom: 100,
   },
-  equipmentContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  equipmentButton: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    padding: 10,
-    margin: 5,
-    backgroundColor: '#fafafa',
-    width: '45%',
-    alignItems: 'center',
-  },
-  equipmentSelected: {
-    backgroundColor: '#3d9d75',
-    borderColor: '#3d9d75',
-  },
-  equipmentButtonText: {
-    color: '#333',
-  },
-  selectedEquipmentText: {
-    color: '#fff',
-  },
-  submitButton: {
-    backgroundColor: '#3d9d75',
+  labourerCard: {
+    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
-    elevation: 4,
+    marginVertical: 8,
+    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    marginBottom: 20,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
   },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 18,
+  labourerInfo: {
+    marginBottom: 10,
+  },
+  labourerName: {
+    fontSize: 22,
     fontWeight: 'bold',
+    color: '#333',
   },
-  closeIcon: {
-    alignSelf: 'center',
+  labourerSkills: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  skillsLabel: {
+    fontWeight: 'bold',
+    color: '#555',
+  },
+  labourerSkill: {
+    fontSize: 16,
+    color: '#555',
+    marginLeft: 4,
+  },
+  labourerDetails: {
+    marginTop: 8,
+  },
+  labourerLocation: {
+    fontSize: 16,
+    color: '#333',
+    marginLeft: 8,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  priceText: {
+    fontWeight: 'bold',
+    color: '#3d9d75',
+  },
+  contactBox: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#e0f7fa',
+    borderColor: '#3d9d75',
+    borderWidth: 1,
+  },
+  contactBoxText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 
