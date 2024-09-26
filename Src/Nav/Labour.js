@@ -25,7 +25,7 @@ const Labour = () => {
 
   const handleSubmit = () => {
     console.log(labourDetails);
-    setFormVisible(false); 
+    setFormVisible(false); // Close form after submission
   };
 
   return (
@@ -39,6 +39,11 @@ const Labour = () => {
 
       {formVisible && (
         <ScrollView style={styles.formContainer}>
+          {/* Close icon in the top-right corner */}
+          <TouchableOpacity style={styles.closeIconTopRight} onPress={toggleForm}>
+            <Ionicons name="close-circle" size={60} color="#ff9999" />
+          </TouchableOpacity>
+
           <TextInput
             style={styles.input}
             placeholder="Name"
@@ -73,10 +78,6 @@ const Labour = () => {
 
           <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
             <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.closeIcon} onPress={toggleForm}>
-            <Ionicons name="close-circle" size={60} color="#ff9999" />
           </TouchableOpacity>
         </ScrollView>
       )}
@@ -139,9 +140,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  closeIcon: {
-    marginTop: 30,
-    alignItems: 'center',
+  closeIconTopRight: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
   middleContainer: {
     flex: 1,
