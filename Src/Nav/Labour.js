@@ -8,7 +8,8 @@ const Labour = () => {
     name: '',
     skill: '',
     contact: '',
-    pricePerDay: ''
+    pricePerDay: '',
+    location: ''
   });
 
   const toggleForm = () => {
@@ -65,9 +66,21 @@ const Labour = () => {
             onChangeText={(text) => handleInputChange('pricePerDay', text)}
             keyboardType="numeric"
           />
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            placeholder="Location"
+            value={labourDetails.location}
+            onChangeText={(text) => handleInputChange('location', text)}
+          />
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.closeButton} onPress={toggleForm}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       )}
 
@@ -117,14 +130,31 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontSize: 16,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
   submitButton: {
     backgroundColor: '#3d9d75',
     padding: 15,
     borderRadius: 10,
-    marginTop: 20,
+    flex: 0.45,
     alignItems: 'center',
   },
   submitButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    backgroundColor: '#f44336',
+    padding: 15,
+    borderRadius: 10,
+    flex: 0.45,
+    alignItems: 'center',
+  },
+  closeButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
