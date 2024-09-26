@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const Labour = () => {
@@ -7,7 +7,8 @@ const Labour = () => {
   const [labourDetails, setLabourDetails] = useState({
     name: '',
     skill: '',
-    contact: ''
+    contact: '',
+    pricePerDay: ''
   });
 
   const toggleForm = () => {
@@ -22,7 +23,7 @@ const Labour = () => {
   };
 
   const handleSubmit = () => {
-    // Handle form submission, e.g., send data to Firebase or update state
+    // Handle form submission logic
     console.log(labourDetails);
     // Close form after submission
     setFormVisible(false);
@@ -38,7 +39,7 @@ const Labour = () => {
       </View>
 
       {formVisible && (
-        <View style={styles.formContainer}>
+        <ScrollView style={styles.formContainer}>
           <TextInput
             style={styles.input}
             placeholder="Name"
@@ -57,8 +58,17 @@ const Labour = () => {
             value={labourDetails.contact}
             onChangeText={(text) => handleInputChange('contact', text)}
           />
-          <Button title="Submit" onPress={handleSubmit} />
-        </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Price per Day"
+            value={labourDetails.pricePerDay}
+            onChangeText={(text) => handleInputChange('pricePerDay', text)}
+            keyboardType="numeric"
+          />
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitButtonText}>Submit</Text>
+          </TouchableOpacity>
+        </ScrollView>
       )}
 
       {!formVisible && (
@@ -103,8 +113,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    padding: 10,
+    padding: 15,
     marginVertical: 10,
+    fontSize: 16,
+  },
+  submitButton: {
+    backgroundColor: '#3d9d75',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   middleContainer: {
     flex: 1,
