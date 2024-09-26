@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { firestore } from '../Firebase/FirebaseConfig'; 
 
 const Labour = ({ navigation }) => {
   const [labourName, setLabourName] = useState('');
@@ -16,14 +17,34 @@ const Labour = ({ navigation }) => {
     setFormVisible(!formVisible);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!labourName || !labourSkill || !labourPrice || !labourLocation || !contact) {
       alert('Please fill out all fields');
       return;
     }
 
-    console.log({ labourName, labourSkill, labourPrice, labourLocation, contact, selectedEquipment });
-    setFormVisible(false);
+    try {
+      await firestore.collection('labourers').add({
+        name: labourName,
+        skill: labourSkill,
+        price: labourPrice,
+        location: labourLocation,
+        contact,
+        equipment: selectedEquipment,
+      });
+      alert('Labourer details submitted successfully!');
+      setFormVisible(false);
+      // Reset form fields
+      setLabourName('');
+      setLabourSkill('');
+      setLabourPrice('');
+      setLabourLocation('');
+      setContact('');
+      setSelectedEquipment([]);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      alert('Error submitting details. Please try again.');
+    }
   };
 
   const equipmentOptions = ['Tractor', 'Baler', 'Sprayer', 'Harvester', 'Plow'];
@@ -49,7 +70,7 @@ const Labour = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-     
+        {/* Search Field */}
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
           <TextInput
