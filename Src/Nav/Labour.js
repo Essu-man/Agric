@@ -33,7 +33,6 @@ const Labour = ({ navigation }) => {
   };
 
   const filterLabourers = () => {
-    // Logic to filter laborers by search query (to be implemented with your laborers list)
     console.log('Searching for:', searchQuery);
   };
 
@@ -51,21 +50,14 @@ const Labour = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Search Bar */}
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search for laborers..."
-          value={searchQuery}
-          onChangeText={(text) => setSearchQuery(text)}
-          onSubmitEditing={filterLabourers}
-        />
-
         {/* Form Section */}
         {formVisible && (
           <ScrollView contentContainerStyle={styles.formContainer}>
-            <TouchableOpacity style={styles.closeIconTopCenter} onPress={toggleForm}>
-              <Ionicons name="close-circle" size={60} color="#ff9999" />
-            </TouchableOpacity>
+            <View style={styles.closeIconContainer}>
+              <TouchableOpacity onPress={toggleForm}>
+                <Ionicons name="close-circle" size={60} color="#ff9999" />
+              </TouchableOpacity>
+            </View>
 
             <View style={styles.card}>
               <TextInput
@@ -125,11 +117,20 @@ const Labour = ({ navigation }) => {
           </ScrollView>
         )}
 
-        {/* "Coming Soon" Placeholder */}
+        {/* Search Bar and Placeholder when form is not visible */}
         {!formVisible && (
-          <View style={styles.middleContainer}>
-            <Text style={styles.comingSoon}>Coming Soon...</Text>
-          </View>
+          <>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search for laborers..."
+              value={searchQuery}
+              onChangeText={(text) => setSearchQuery(text)}
+              onSubmitEditing={filterLabourers}
+            />
+            <View style={styles.middleContainer}>
+              <Text style={styles.comingSoon}>Coming Soon...</Text>
+            </View>
+          </>
         )}
       </View>
     </KeyboardAvoidingView>
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
   addButton: {
     backgroundColor: '#3d9d75',
     borderRadius: 50,
-    padding: 10,
+    padding: 5,
     elevation: 3,
   },
   searchInput: {
@@ -169,10 +170,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
   },
   formContainer: {
-    padding: 16,
+    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 12,
     marginTop: 20,
+    padding: 16,
   },
   card: {
     backgroundColor: '#fff',
@@ -208,11 +210,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  closeIconTopCenter: {
-    position: 'absolute',
-    top: 10,
-    left: '50%',
-    transform: [{ translateX: -30 }],
+  closeIconContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
   },
   equipmentTypeLabel: {
     fontSize: 18,
