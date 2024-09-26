@@ -102,6 +102,7 @@ const Labour = ({ navigation }) => {
               />
 
               {/* Equipment Type Selection */}
+              <Text style={styles.equipmentTypeLabel}>Equipment Type</Text>
               <View style={styles.equipmentTypeContainer}>
                 {equipmentTypes.map((type) => (
                   <TouchableOpacity
@@ -213,19 +214,26 @@ const styles = StyleSheet.create({
     left: '50%',
     transform: [{ translateX: -30 }],
   },
+  equipmentTypeLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#333',
+  },
   equipmentTypeContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginBottom: 16,
   },
   equipmentType: {
-    flex: 1,
+    width: '48%',
     borderColor: '#ddd',
     borderWidth: 1,
     padding: 10,
     borderRadius: 20,
     alignItems: 'center',
-    marginHorizontal: 4,
+    marginVertical: 4,
     backgroundColor: '#fafafa',
   },
   equipmentTypeSelected: {
