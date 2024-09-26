@@ -25,7 +25,7 @@ const Labour = () => {
 
   const handleSubmit = () => {
     console.log(labourDetails);
-    setFormVisible(false); // Close form after submission
+    setFormVisible(false); 
   };
 
   return (
@@ -76,7 +76,7 @@ const Labour = () => {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.closeIcon} onPress={toggleForm}>
-            <Ionicons name="close-circle" size={40} color="#f44336" />
+            <Ionicons name="close-circle" size={60} color="#ff9999" />
           </TouchableOpacity>
         </ScrollView>
       )}
