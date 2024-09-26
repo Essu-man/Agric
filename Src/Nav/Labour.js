@@ -70,17 +70,7 @@ const Labour = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Search Field */}
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search for labourers..."
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-          />
-        </View>
-
+        {/* Form that covers the search field */}
         {formVisible && (
           <ScrollView contentContainerStyle={styles.formContainer}>
             <View style={styles.card}>
@@ -122,16 +112,12 @@ const Labour = ({ navigation }) => {
                 {equipmentOptions.map((equipment) => (
                   <TouchableOpacity
                     key={equipment}
-                    style={[
-                      styles.equipmentButton,
-                      selectedEquipment.includes(equipment) && styles.equipmentSelected
-                    ]}
+                    style={[styles.equipmentButton, selectedEquipment.includes(equipment) && styles.equipmentSelected]}
                     onPress={() => handleEquipmentSelect(equipment)}
                   >
-                    <Text style={[
-                      styles.equipmentButtonText,
-                      selectedEquipment.includes(equipment) && styles.selectedEquipmentText
-                    ]}>{equipment}</Text>
+                    <Text style={[styles.equipmentButtonText, selectedEquipment.includes(equipment) && styles.selectedEquipmentText]}>
+                      {equipment}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -145,6 +131,19 @@ const Labour = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </ScrollView>
+        )}
+
+        {/* Search Field */}
+        {!formVisible && (
+          <View style={styles.searchContainer}>
+            <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search for labourers..."
+              value={searchTerm}
+              onChangeText={setSearchTerm}
+            />
+          </View>
         )}
       </View>
     </KeyboardAvoidingView>
@@ -192,10 +191,14 @@ const styles = StyleSheet.create({
     height: 50,
   },
   formContainer: {
+    position: 'absolute',
+    top: 0, // Set to 0 to cover the search field
+    left: 0,
+    right: 0,
+    bottom: 0,
     padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginTop: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent white
+    zIndex: 1,
   },
   card: {
     backgroundColor: '#fff',
