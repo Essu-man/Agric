@@ -8,6 +8,7 @@ const Labour = ({ navigation }) => {
   const [labourPrice, setLabourPrice] = useState('');
   const [labourLocation, setLabourLocation] = useState('');
   const [contact, setContact] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [formVisible, setFormVisible] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState([]);
 
@@ -46,6 +47,17 @@ const Labour = ({ navigation }) => {
           <TouchableOpacity style={styles.addButton} onPress={toggleForm}>
             <Ionicons name="add" size={30} color="#fff" />
           </TouchableOpacity>
+        </View>
+
+     
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for labourers..."
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+          />
         </View>
 
         {formVisible && (
@@ -140,6 +152,23 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 10,
     elevation: 3,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    backgroundColor: '#fafafa',
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    height: 50,
   },
   formContainer: {
     padding: 16,
