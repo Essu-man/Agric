@@ -9,19 +9,32 @@ const Labour = ({ navigation }) => {
   const [labourLocation, setLabourLocation] = useState('');
   const [contact, setContact] = useState('');
   const [formVisible, setFormVisible] = useState(false);
+  const [selectedEquipmentType, setSelectedEquipmentType] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const equipmentTypes = ['Tractor', 'Baler', 'Sprayer', 'Harvester', 'Plow'];
 
   const toggleForm = () => {
     setFormVisible(!formVisible);
   };
 
   const handleSubmit = () => {
-    if (!labourName || !labourSkill || !labourPrice || !labourLocation || !contact) {
+    if (!labourName || !labourSkill || !labourPrice || !labourLocation || !contact || !selectedEquipmentType) {
       alert('Please fill out all fields');
       return;
     }
 
-    console.log({ labourName, labourSkill, labourPrice, labourLocation, contact });
+    console.log({ labourName, labourSkill, labourPrice, labourLocation, contact, selectedEquipmentType });
     setFormVisible(false);
+  };
+
+  const handleEquipmentTypeSelect = (type) => {
+    setSelectedEquipmentType(type);
+  };
+
+  const filterLabourers = () => {
+    // Logic to filter laborers by search query (to be implemented with your laborers list)
+    console.log('Searching for:', searchQuery);
   };
 
   return (
@@ -30,6 +43,7 @@ const Labour = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.container}>
+        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerText}>Looking for Manpower</Text>
           <TouchableOpacity style={styles.addButton} onPress={toggleForm}>
@@ -37,8 +51,22 @@ const Labour = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+        {/* Search Bar */}
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search for laborers..."
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+          onSubmitEditing={filterLabourers}
+        />
+
+        {/* Form Section */}
         {formVisible && (
           <ScrollView contentContainerStyle={styles.formContainer}>
+            <TouchableOpacity style={styles.closeIconTopCenter} onPress={toggleForm}>
+              <Ionicons name="close-circle" size={60} color="#ff9999" />
+            </TouchableOpacity>
+
             <View style={styles.card}>
               <TextInput
                 style={styles.input}
@@ -73,18 +101,30 @@ const Labour = ({ navigation }) => {
                 keyboardType="phone-pad"
               />
 
+              {/* Equipment Type Selection */}
+              <View style={styles.equipmentTypeContainer}>
+                {equipmentTypes.map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.equipmentType,
+                      selectedEquipmentType === type && styles.equipmentTypeSelected
+                    ]}
+                    onPress={() => handleEquipmentTypeSelect(type)}
+                  >
+                    <Text style={styles.equipmentTypeText}>{type}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                 <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-
-              {/* Close icon positioned below the submit button */}
-              <TouchableOpacity style={styles.closeIconBottom} onPress={toggleForm}>
-                <Ionicons name="close-circle" size={60} color="#ff9999" />
               </TouchableOpacity>
             </View>
           </ScrollView>
         )}
 
+        {/* "Coming Soon" Placeholder */}
         {!formVisible && (
           <View style={styles.middleContainer}>
             <Text style={styles.comingSoon}>Coming Soon...</Text>
@@ -117,6 +157,15 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 10,
     elevation: 3,
+  },
+  searchInput: {
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: '#fafafa',
   },
   formContainer: {
     padding: 16,
@@ -158,9 +207,33 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  closeIconBottom: {
-    alignSelf: 'center',
-    marginTop: 20,
+  closeIconTopCenter: {
+    position: 'absolute',
+    top: 10,
+    left: '50%',
+    transform: [{ translateX: -30 }],
+  },
+  equipmentTypeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  equipmentType: {
+    flex: 1,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginHorizontal: 4,
+    backgroundColor: '#fafafa',
+  },
+  equipmentTypeSelected: {
+    backgroundColor: '#3d9d75',
+  },
+  equipmentTypeText: {
+    fontSize: 16,
+    color: '#333',
   },
   middleContainer: {
     flex: 1,
