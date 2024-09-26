@@ -2,12 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { db } from '../Firebase/FirebaseConfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 
 const Labour = ({ navigation }) => {
   const [labourers, setLabourers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
+  const [formVisible, setFormVisible] = useState(false);
+  const [newLabourer, setNewLabourer] = useState({
+    name: '',
+    skill: '',
+    contact: '',
+    location: '',
+    price: '', // Added price field
+  });
+
   useEffect(() => {
     const fetchLabourers = async () => {
       const labourersCollection = collection(db, 'labourers');
@@ -19,12 +27,27 @@ const Labour = ({ navigation }) => {
     fetchLabourers();
   }, []);
 
+  const handleInputChange = (name, value) => {
+    setNewLabourer({ ...newLabourer, [name]: value });
+  };
+
+  const handleAddLabourer = async () => {
+    if (newLabourer.name && newLabourer.skill && newLabourer.contact && newLabourer.location && newLabourer.price) {
+      await addDoc(collection(db, 'labourers'), newLabourer);
+      setNewLabourer({ name: '', skill: '', contact: '', location: '', price: '' });
+      setFormVisible(false); // Hide form after adding
+      fetchLabourers(); // Refresh the list
+    } else {
+      alert("Please fill in all fields");
+    }
+  };
+
   const filteredLabourers = labourers.filter(labourer => 
     labourer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const toggleForm = () => {
-    // Logic for toggling form visibility if needed
+    setFormVisible(!formVisible);
   };
 
   return (
@@ -47,6 +70,48 @@ const Labour = ({ navigation }) => {
           onChangeText={setSearchTerm}
         />
 
+        {/* New Labourer Form */}
+        {formVisible && (
+          <View style={styles.formContainer}>
+            <TouchableOpacity style={styles.closeButton} onPress={toggleForm}>
+              <Ionicons name="close" size={24} color="#3d9d75" />
+            </TouchableOpacity>
+            <TextInput
+              placeholder="Name"
+              value={newLabourer.name}
+              onChangeText={(value) => handleInputChange('name', value)}
+              style={styles.formInput}
+            />
+            <TextInput
+              placeholder="Skill"
+              value={newLabourer.skill}
+              onChangeText={(value) => handleInputChange('skill', value)}
+              style={styles.formInput}
+            />
+            <TextInput
+              placeholder="Contact"
+              value={newLabourer.contact}
+              onChangeText={(value) => handleInputChange('contact', value)}
+              style={styles.formInput}
+            />
+            <TextInput
+              placeholder="Location"
+              value={newLabourer.location}
+              onChangeText={(value) => handleInputChange('location', value)}
+              style={styles.formInput}
+            />
+            <TextInput
+              placeholder="Price (GHS)"
+              value={newLabourer.price}
+              onChangeText={(value) => handleInputChange('price', value)}
+              style={styles.formInput}
+            />
+            <TouchableOpacity style={styles.submitButton} onPress={handleAddLabourer}>
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {filteredLabourers.map((labourer) => (
             <View key={labourer.id} style={styles.labourerCard}>
@@ -57,7 +122,7 @@ const Labour = ({ navigation }) => {
                   <Text style={styles.labourerSkill}>{labourer.skill}</Text>
                 </View>
                 <Text style={styles.labourerDetails}>
-                  Price: <Text style={styles.priceText}>90 GHS/Day</Text>
+                  Price: <Text style={styles.priceText}>{labourer.price} GHS</Text>
                 </Text>
                 <View style={styles.locationContainer}>
                   <Ionicons name="location-outline" size={20} color="#3d9d75" />
@@ -106,6 +171,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     backgroundColor: '#fafafa',
+  },
+  formContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    elevation: 2,
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 10,
+  },
+  formInput: {
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#fafafa',
+  },
+  submitButton: {
+    backgroundColor: '#3d9d75',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   scrollContainer: {
     paddingBottom: 100,
